@@ -1,0 +1,116 @@
+#%RAML 1.0
+title: TMF679 Product Offering Qualification Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/productOfferingQualificationManagement/v4
+mediaType: application/json
+
+types:
+  ErrorResponse:
+    type: object
+    properties:
+      code: string
+      reason: string
+      message: string
+
+documentation:
+  - title: Overview
+    content: |
+      Process API implementing TMF679 Product Offering Qualification Management.
+      Evaluates whether a verified non-resident individual is eligible for the
+      Switzerland Connect Plan (OFFERING_SWISS_CONNECT).
+      Orchestrates: product-catalog-sapi GET /offerings/{offeringId}.
+      Eligibility evaluation logic (passportAllowed, localBankRequired) runs
+      inside this Process API — it is not delegated to any System API.
+
+/productOfferingQualification:
+  post:
+    displayName: Check Product Offering Qualification
+    description: |
+      Evaluates non-resident eligibility for a specific product offering.
+      Fetches eligibilityRules from product-catalog-sapi and evaluates them
+      against the customer's verified identity attributes (nationality, residency,
+      KYC status). Returns qualified or notQualified with a clear reason.
+      Displays full price and allowance details so the customer sees the final
+      price before ordering.
+    body:
+      application/json:
+        type: object
+        properties:
+          productOffering:
+            type: object
+            required: true
+            properties:
+              id:
+                type: string
+                required: true
+          relatedParty:
+            type: object
+            required: true
+            properties:
+              id:
+                type: string
+                required: true
+              verificationStatus:
+                type: string
+                required: true
+                enum: [VERIFIED, FAILED, MANUAL_REVIEW]
+              nationality:
+                type: string
+                required: true
+              countryOfResidence:
+                type: string
+                required: true
+        example:
+          productOffering:
+            id: OFFERING_SWISS_CONNECT
+          relatedParty:
+            id: CUST-DB-99812
+            verificationStatus: VERIFIED
+            nationality: CHE
+            countryOfResidence: CHE
+    responses:
+      201:
+        description: Qualification evaluated — qualified or notQualified with reason
+        body:
+          application/json:
+            example:
+              id: POQ-LMT-99812
+              href: /productOfferingQualificationManagement/v4/productOfferingQualification/POQ-LMT-99812
+              state: done
+              productOfferingQualificationItem:
+                - id: "1"
+                  qualificationResult: qualified
+                  eligibilityUnavailabilityReason: null
+                  productOffering:
+                    id: OFFERING_SWISS_CONNECT
+                    name: Switzerland Connect Plan
+                  price:
+                    amount: 19.99
+                    currency: EUR
+                    billingPeriod: Monthly
+                  allowances:
+                    latviaData: UNLIMITED
+                    latviaVoiceSms: UNLIMITED
+                    switzerlandVoiceMins: 60
+      200:
+        description: Qualification evaluated — customer does not qualify
+        body:
+          application/json:
+            example:
+              id: POQ-LMT-99813
+              href: /productOfferingQualificationManagement/v4/productOfferingQualification/POQ-LMT-99813
+              state: done
+              productOfferingQualificationItem:
+                - id: "1"
+                  qualificationResult: notQualified
+                  eligibilityUnavailabilityReason:
+                    code: ELIGIBILITY_FAILED
+                    label: Customer identity verification status is not VERIFIED.
+                  productOffering:
+                    id: OFFERING_SWISS_CONNECT
+                    name: Switzerland Connect Plan
+      404:
+        description: Product offering not found in catalog
+        body:
+          application/json:
+            type: ErrorResponse

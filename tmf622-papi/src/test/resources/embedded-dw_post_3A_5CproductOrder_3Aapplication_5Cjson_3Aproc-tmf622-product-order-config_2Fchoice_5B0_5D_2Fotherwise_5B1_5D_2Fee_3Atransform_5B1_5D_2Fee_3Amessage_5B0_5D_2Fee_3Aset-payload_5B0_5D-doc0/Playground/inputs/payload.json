@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "channel": "consectetur",
+    "recipient": "dolor"
+  },
+  "orderItem": [
+    {
+      "productOffering": {
+        "id": "risus"
+      },
+      "action": "Nam",
+      "id": "Aliquam"
+    }
+  ],
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor erat erat sed mi. Aliquam convallis nunc felis molestie sodales dolor sodales",
+  "payment": {
+    "amount": 50,
+    "currency": "ac",
+    "cardToken": "In"
+  },
+  "relatedParty": {
+    "privacyProfileId": "risus",
+    "billingAccountId": "risus",
+    "id": "a"
+  }
+}

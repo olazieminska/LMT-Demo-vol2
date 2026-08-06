@@ -1,0 +1,108 @@
+#%RAML 1.0
+title: TMF632 Party Management Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/partyManagement/v4
+mediaType: application/json
+
+types:
+  ErrorResponse:
+    type: object
+    properties:
+      code: string
+      reason: string
+      message: string
+
+/individual:
+  post:
+    displayName: Create Individual (Non-Resident Onboarding)
+    description: |
+      Registers a new non-resident individual using passport identity.
+      Orchestration:
+      1) external-partners-sapi POST /kyc/verify-passport
+      2) customer-account-sapi POST /customers
+    body:
+      application/json:
+        type: object
+        properties:
+          givenName:
+            type: string
+            required: true
+          familyName:
+            type: string
+            required: true
+          passportNumber:
+            type: string
+            required: true
+          issuingCountry:
+            type: string
+            required: true
+          nationality:
+            type: string
+            required: true
+          countryOfResidence:
+            type: string
+            required: true
+          birthDate:
+            type: date-only
+            required: true
+          contactMedium:
+            type: object
+            required: true
+            properties:
+              emailAddress:
+                type: string
+                required: true
+        example:
+          givenName: Amelie
+          familyName: Muller
+          passportNumber: X1234567
+          issuingCountry: CHE
+          nationality: CHE
+          countryOfResidence: CHE
+          birthDate: 2002-05-14
+          contactMedium:
+            emailAddress: amelie.muller@example.ch
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              id: CUST-DB-99812
+              href: /partyManagement/v4/individual/CUST-DB-99812
+              givenName: Amelie
+              familyName: Muller
+              nationality: CHE
+              countryOfResidence: CHE
+              verificationStatus: VERIFIED
+      400:
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              code: "400"
+              reason: KYC_VERIFICATION_FAILED
+              message: Identity verification did not pass.
+      409:
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              code: "409"
+              reason: ERR_DUPLICATE_PASSPORT
+              message: A customer record with this passport already exists.
+
+  /{individualId}:
+    get:
+      displayName: Retrieve Individual
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                id: CUST-DB-99812
+                href: /partyManagement/v4/individual/CUST-DB-99812
+                verificationStatus: VERIFIED
+        404:
+          body:
+            application/json:
+              type: ErrorResponse

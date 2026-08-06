@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <configuration-properties file="properties/config-dev.yaml" />
+    <http:listener-config name="proc-tmf622-product-order-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${papi.http.port}" />
+    </http:listener-config>
+    <http:request-config name="order-management-request-config">
+        <http:request-connection protocol="${order.sapi.protocol}" host="${order.sapi.host}" port="${order.sapi.port}" />
+    </http:request-config>
+    <http:request-config name="external-partners-request-config">
+        <http:request-connection protocol="${external.sapi.protocol}" host="${external.sapi.host}" port="${external.sapi.port}" />
+    </http:request-config>
+    <http:request-config name="fulfillment-request-config">
+        <http:request-connection protocol="${fulfillment.sapi.protocol}" host="${fulfillment.sapi.host}" port="${fulfillment.sapi.port}" />
+    </http:request-config>
+    <apikit:config name="proc-tmf622-product-order-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:proc-tmf622-product-order:4.0.0:raml:zip:proc-tmf622-product-order.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="proc-tmf622-product-order-main">
+        <http:listener config-ref="proc-tmf622-product-order-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="proc-tmf622-product-order-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Bad Request Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Not Found Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Method Not Allowed Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Not Acceptable Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Unsupported Media Type Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Not Implemented Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="proc-tmf622-product-order-console">
+        <http:listener config-ref="proc-tmf622-product-order-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="proc-tmf622-product-order-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Console Not Found Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\productOrder\(productOrderId):proc-tmf622-product-order-config">
+        <set-variable variableName="productOrderId" value="#[attributes.uriParams.'productOrderId']" />
+        <ee:transform doc:name="Get Product Order Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: vars.productOrderId,
+  href: "/productOrderingManagement/v4/productOrder/" ++ vars.productOrderId,
+  state: "completed",
+  relatedParty: {
+    id: "CUST-DB-99812"
+  },
+  payment: {
+    transactionId: "TXN-GW-99201",
+    status: "SUCCESS"
+  },
+  esim: {
+    iccid: "8937100000000012345",
+    assignedMsisdn: "+37120001234",
+    activationCode: "LPA:1\$smdp.lmt.lv\$CONF-CODE-99812",
+    status: "RELEASED"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\productOrder:application\json:proc-tmf622-product-order-config">
+        <choice doc:name="Validate Consent">
+            <when expression="#[isEmpty(payload.relatedParty.privacyProfileId default null)]">
+                <set-variable variableName="httpStatus" value="400" />
+                <ee:transform doc:name="Missing Consent Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "400",
+  reason: "CONSENT_REQUIRED",
+  message: "A valid privacyProfileId must be provided. Order cannot proceed without consent record."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <set-variable variableName="orderRequest" value="#[payload]" />
+                <ee:transform doc:name="Map Create Order Request">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  customerId: vars.orderRequest.relatedParty.id,
+  billingAccountId: vars.orderRequest.relatedParty.billingAccountId,
+  offeringId: vars.orderRequest.orderItem[0].productOffering.id,
+  amount: vars.orderRequest.payment.amount,
+  currency: vars.orderRequest.payment.currency,
+  state: "PENDING_PAYMENT"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <http:request method="POST" config-ref="order-management-request-config" path="/api/orders" />
+                <set-variable variableName="orderCreateResponse" value="#[payload]" />
+                <set-variable variableName="orderId" value="#[(payload.orderId default payload.id default 'ORD-SYS-99812') as String]" />
+                <choice doc:name="Payment Outcome">
+                    <when expression="#[((vars.orderRequest.payment.cardToken default '') as String) startsWith 'tok_declined']">
+                        <ee:transform doc:name="Map Failed Status Update">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "FAILED_PAYMENT",
+  reason: "Card charge failed. Order cannot proceed."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <http:request method="PATCH" config-ref="order-management-request-config" path="#['/api/orders/' ++ vars.orderId ++ '/status']" />
+                        <set-variable variableName="httpStatus" value="402" />
+                        <ee:transform doc:name="Payment Declined Response">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: vars.orderId,
+  href: "/productOrderingManagement/v4/productOrder/" ++ vars.orderId,
+  state: "FAILED_PAYMENT",
+  payment: {
+    transactionId: "TXN-GW-DECLINED-001",
+    status: "DECLINED",
+    acquirerCode: "INSUFFICIENT_FUNDS"
+  },
+  error: {
+    code: "402",
+    reason: "PAYMENT_DECLINED",
+    message: "Card charge failed. Order has been cancelled and will not proceed to fulfilment."
+  }
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <ee:transform doc:name="Map Payment Charge Request">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  amount: vars.orderRequest.payment.amount,
+  currency: vars.orderRequest.payment.currency,
+  billingAccountId: vars.orderRequest.relatedParty.billingAccountId,
+  cardToken: vars.orderRequest.payment.cardToken
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <logger level="INFO" doc:name="Log Payment Charge Request" message='#[ "paymentChargeRequest=" ++ write(payload, "application/json") ]' />
+                        <http:request method="POST" config-ref="external-partners-request-config" path="/api/payments/charges">
+                            <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+                        </http:request>
+                        <set-variable variableName="paymentResponse" value="#[payload]" />
+                        <ee:transform doc:name="Map eSIM Provision Request">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  customerId: vars.orderRequest.relatedParty.id,
+  orderId: vars.orderId,
+  offeringId: vars.orderRequest.orderItem[0].productOffering.id
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <http:request method="POST" config-ref="fulfillment-request-config" path="/api/esim/provision" />
+                        <set-variable variableName="esimResponse" value="#[payload]" />
+                        <ee:transform doc:name="Map Notification Request">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  channel: vars.orderRequest.notification.channel default "Email",
+  recipient: vars.orderRequest.notification.recipient default "amelie.muller@example.ch",
+  templateId: "ESIM_ACTIVATION_TEMP",
+  activationCode: vars.esimResponse.activationCode
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <http:request method="POST" config-ref="fulfillment-request-config" path="/api/notifications/send" />
+                        <set-variable variableName="notificationResponse" value="#[payload]" />
+                        <ee:transform doc:name="Map Completed Status Update">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "COMPLETED",
+  reason: "Payment verified and eSIM provisioned."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <http:request method="PATCH" config-ref="order-management-request-config" path="#['/api/orders/' ++ vars.orderId ++ '/status']" />
+                        <set-variable variableName="httpStatus" value="201" />
+                        <ee:transform doc:name="Build Product Order Response">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: vars.orderId,
+  href: "/productOrderingManagement/v4/productOrder/" ++ vars.orderId,
+  state: "completed",
+  description: vars.orderRequest.description default "Switzerland Connect Plan - eSIM order for Amelie",
+  orderDate: vars.orderCreateResponse.createdAt default now() as String,
+  completionDate: now() as String,
+  relatedParty: {
+    id: vars.orderRequest.relatedParty.id,
+    billingAccountId: vars.orderRequest.relatedParty.billingAccountId
+  },
+  payment: {
+    transactionId: vars.paymentResponse.transactionId default "TXN-GW-99201",
+    status: vars.paymentResponse.status default "SUCCESS",
+    amount: vars.paymentResponse.amount default vars.orderRequest.payment.amount,
+    currency: vars.paymentResponse.currency default vars.orderRequest.payment.currency,
+    acquirerCode: vars.paymentResponse.acquirerCode default "APPROVED"
+  },
+  orderItem: [
+    {
+      id: vars.orderRequest.orderItem[0].id default "1",
+      state: "completed",
+      productOffering: {
+        id: vars.orderRequest.orderItem[0].productOffering.id,
+        name: "Switzerland Connect Plan"
+      },
+      product: {
+        id: vars.esimResponse.iccid,
+        productSerialNumber: vars.esimResponse.iccid,
+        place: "eSIM"
+      }
+    }
+  ],
+  esim: {
+    iccid: vars.esimResponse.iccid,
+    assignedMsisdn: vars.esimResponse.assignedMsisdn,
+    smdpAddress: vars.esimResponse.smdpAddress,
+    activationCode: vars.esimResponse.activationCode,
+    status: vars.esimResponse.status default "RELEASED"
+  },
+  notification: {
+    notificationId: vars.notificationResponse.notificationId default "NOTIF-99102",
+    channel: vars.orderRequest.notification.channel default "Email",
+    deliveryStatus: vars.notificationResponse.deliveryStatus default "DELIVERED"
+  }
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+        <error-handler>
+            <on-error-propagate type="HTTP:BAD_REQUEST">
+                <set-variable variableName="httpStatus" value="502" />
+                <ee:transform doc:name="Downstream 400 Error Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "502",
+  reason: "DOWNSTREAM_API_ERROR",
+  message: "Downstream API rejected request with HTTP 400.",
+  downstreamStatus: "400",
+  downstreamBody: write(error.errorMessage.payload, "application/json") default "No downstream error payload available."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="HTTP:*">
+                <set-variable variableName="httpStatus" value="502" />
+                <ee:transform doc:name="Downstream Error Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "502",
+  reason: "DOWNSTREAM_API_ERROR",
+  message: "Failed to complete product order orchestration against System APIs."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+</mule>

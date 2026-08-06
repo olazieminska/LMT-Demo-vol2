@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "channel": "a",
+    "recipient": "tincidunt"
+  },
+  "orderItem": [
+    {
+      "productOffering": {
+        "id": "eros"
+      },
+      "action": "eget",
+      "id": "pulvinar"
+    }
+  ],
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium",
+  "payment": {
+    "amount": 27,
+    "currency": "Nam",
+    "cardToken": "semper"
+  },
+  "relatedParty": {
+    "privacyProfileId": "molestie",
+    "billingAccountId": "sed",
+    "id": "dolor"
+  }
+}

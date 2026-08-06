@@ -1,0 +1,11 @@
+{
+  "main": "tmf632-sapi.raml",
+  "name": "tmf632-sapi",
+  "classifier": "raml",
+  "organizationId": "de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3",
+  "descriptorVersion": "1.0.0",
+  "groupId": "de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3",
+  "assetId": "tmf632-sapi",
+  "version": "1.0.0",
+  "tags": []
+}

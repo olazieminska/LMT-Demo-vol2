@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "Fusce",
+    "recipient": "tempor"
+  },
+  "identity": {
+    "passportNumber": "adipiscing",
+    "nationality": "lorem",
+    "issuingCountry": "eget",
+    "givenName": "Alisia",
+    "familyName": "Alison",
+    "countryOfResidence": "sodales",
+    "birthDate": "convallis",
+    "email": "Curtis.Alkins@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 74,
+    "currency": "Nunc",
+    "offeringId": "Fusce"
+  },
+  "payment": {
+    "amount": 97,
+    "currency": "dui",
+    "cardToken": "at"
+  },
+  "consent": {
+    "privacyProfileId": "viverra",
+    "marketingConsent": true,
+    "privacyAccepted": false,
+    "agreedToTerms": true
+  }
+}

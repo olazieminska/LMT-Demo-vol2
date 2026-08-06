@@ -1,0 +1,7 @@
+{
+  "applicationName": "external-partners-sapi",
+  "runtime": "4.12.1:4e-java17",
+  "replicas": 1,
+  "replicaSize": "0.1",
+  "deploymentModel": "rolling"
+}

@@ -1,0 +1,71 @@
+#%RAML 1.0
+title: External Partners System API
+version: v1
+baseUri: https://api.lmt.lv/sapi/external-partners/v1
+mediaType: application/json
+
+/kyc/verify-passport:
+  post:
+    displayName: Verify Passport via External IDV Provider
+    description: Executes external biometric/document checks on non-resident passports.
+    body:
+      application/json:
+        properties:
+          passportNumber: string
+          issuingCountry: string
+          givenName: string
+          familyName: string
+          birthDate: date-only
+        example:
+          passportNumber: "X1234567"
+          issuingCountry: "CHE"
+          givenName: "Amelie"
+          familyName: "Müller"
+          birthDate: "2002-05-14"
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              verificationId: "KYC-EXT-88192"
+              passportNumber: "X1234567"
+              status: "PASSED"
+              confidenceScore: 0.99
+              verifiedAt: "2026-08-04T10:01:30Z"
+
+/payments/charges:
+  post:
+    displayName: Capture Credit Card Payment
+    description: Executes card payment authorization and capture with external acquirer.
+    body:
+      application/json:
+        properties:
+          amount: number
+          currency: string
+          billingAccountId: string
+          cardToken: string
+        example:
+          amount: 19.99
+          currency: "EUR"
+          billingAccountId: "BAC-DB-99812"
+          cardToken: "tok_visa_4111111111111111"
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              transactionId: "TXN-GW-99201"
+              status: "SUCCESS"
+              amount: 19.99
+              currency: "EUR"
+              acquirerCode: "APPROVED"
+              timestamp: "2026-08-04T10:02:00Z"
+      402:
+        description: Payment Declined
+        body:
+          application/json:
+            example:
+              transactionId: "TXN-GW-99202"
+              status: "DECLINED"
+              acquirerCode: "INSUFFICIENT_FUNDS"
+              reason: "Card charge failed. Order cannot proceed."

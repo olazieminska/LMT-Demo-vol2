@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "tempor",
+    "recipient": "dolor"
+  },
+  "identity": {
+    "passportNumber": "felis",
+    "nationality": "lorem",
+    "issuingCountry": "dolor",
+    "givenName": "Aida",
+    "familyName": "Wang",
+    "countryOfResidence": "Lorem",
+    "birthDate": "Aliquam",
+    "email": "Abel.Lesende@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 19,
+    "currency": "dui",
+    "offeringId": "semper"
+  },
+  "payment": {
+    "amount": 53,
+    "currency": "libero",
+    "cardToken": "lectus"
+  },
+  "consent": {
+    "privacyProfileId": "adipiscing",
+    "marketingConsent": false,
+    "privacyAccepted": true,
+    "agreedToTerms": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "channel": "amet",
+    "recipient": "amet"
+  },
+  "orderItem": [
+    {
+      "productOffering": {
+        "id": "pretium"
+      },
+      "action": "sit",
+      "id": "eros"
+    }
+  ],
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae",
+  "payment": {
+    "amount": 25,
+    "currency": "tempor",
+    "cardToken": "justo"
+  },
+  "relatedParty": {
+    "privacyProfileId": "ipsum",
+    "billingAccountId": "Lorem",
+    "id": "molestie"
+  }
+}

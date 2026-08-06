@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "sodales",
+    "recipient": "viverra"
+  },
+  "identity": {
+    "passportNumber": "ipsum",
+    "nationality": "dolor",
+    "issuingCountry": "nunc",
+    "givenName": "Claudio",
+    "familyName": "Smithies",
+    "countryOfResidence": "arcu",
+    "birthDate": "eros",
+    "email": "Alise.Davio@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 98,
+    "currency": "lorem",
+    "offeringId": "aliquam"
+  },
+  "payment": {
+    "amount": 17,
+    "currency": "nibh",
+    "cardToken": "Aliquam"
+  },
+  "consent": {
+    "privacyProfileId": "ipsum",
+    "marketingConsent": false,
+    "privacyAccepted": false,
+    "agreedToTerms": false
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "basicConstraints": 48,
+  "criticalExtensionOIDs": [
+    "adipiscing",
+    "Aliquam"
+  ],
+  "extendedKeyUsage": [
+    "aliquam",
+    "Pellentesque"
+  ],
+  "extensions": [
+    {
+      "criticality": false,
+      "oid": "venenatis"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Alfredo",
+      "type": 93
+    }
+  ],
+  "issuerDN": {
+    "commonName": "dui",
+    "name": "Damion"
+  },
+  "issuerUniqueID": [
+    false,
+    true
+  ],
+  "issuerX500Principal": {
+    "name": "Aleta"
+  },
+  "keyUsage": [
+    false,
+    false
+  ],
+  "name": "Alexia",
+  "nonCriticalExtensionOIDs": [
+    "Nam",
+    "consectetur",
+    "molestie"
+  ],
+  "notAfter": "2022-01-12",
+  "notBefore": "2024-10-04",
+  "publicKey": {
+    "algorithm": "erat",
+    "modulus": 66,
+    "params": 12,
+    "publicKey": "molestie"
+  },
+  "serialNumber": 91,
+  "serialNumberObject": {
+    "serialNumber": 24
+  },
+  "sigAlgName": "In",
+  "sigAlgOID": "erat",
+  "subjectAlternativeNames": [
+    {
+      "name": "Adella",
+      "type": 39
+    }
+  ],
+  "subjectDN": {
+    "commonName": "sit",
+    "name": "Chauncey"
+  },
+  "subjectX500Principal": {
+    "name": "Burt"
+  },
+  "type": "a",
+  "version": 56
+}

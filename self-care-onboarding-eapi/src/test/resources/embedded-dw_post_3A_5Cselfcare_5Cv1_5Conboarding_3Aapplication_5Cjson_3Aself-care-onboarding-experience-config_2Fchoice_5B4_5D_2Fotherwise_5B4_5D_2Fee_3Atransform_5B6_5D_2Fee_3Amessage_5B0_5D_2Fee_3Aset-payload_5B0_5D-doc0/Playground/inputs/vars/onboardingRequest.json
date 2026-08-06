@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "ac",
+    "recipient": "nisi"
+  },
+  "identity": {
+    "passportNumber": "Aliquam",
+    "nationality": "Lorem",
+    "issuingCountry": "nibh",
+    "givenName": "Chet",
+    "familyName": "Smithson",
+    "countryOfResidence": "at",
+    "birthDate": "nunc",
+    "email": "Alton.Taylor@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 48,
+    "currency": "faucibus",
+    "offeringId": "a"
+  },
+  "payment": {
+    "amount": 26,
+    "currency": "ipsum",
+    "cardToken": "at"
+  },
+  "consent": {
+    "privacyProfileId": "lorem",
+    "marketingConsent": true,
+    "privacyAccepted": false,
+    "agreedToTerms": false
+  }
+}

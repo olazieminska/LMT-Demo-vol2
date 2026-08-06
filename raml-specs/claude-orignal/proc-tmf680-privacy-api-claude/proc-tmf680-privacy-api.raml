@@ -1,0 +1,118 @@
+#%RAML 1.0
+title: TMF680 Privacy Management Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/privacyManagement/v4
+mediaType: application/json
+
+documentation:
+  - title: Overview
+    content: |
+      Process API implementing TMF680 Party Privacy Management.
+      Captures and enforces mandatory GDPR consent — terms & conditions and
+      privacy policy — before any order can be placed.
+      Business rule: an order submitted without agreedToTerms: true must be
+      rejected at this layer. No downstream SAPI call is made if consent is missing.
+      The consent record (privacyProfileId) is returned and must be referenced
+      in the subsequent TMF622 product order.
+
+/privacyProfile:
+  post:
+    displayName: Create Privacy Profile (Consent Capture)
+    description: |
+      Records the customer's consent to LMT's terms and privacy policy.
+      Enforces the mandatory consent gate: if agreedToTerms is false,
+      returns 400 immediately — no order can proceed without this record.
+      marketingConsent is optional (customer choice, no order impact).
+    body:
+      application/json:
+        properties:
+          relatedParty:
+            type: object
+            required: true
+            properties:
+              id:
+                type: string
+                required: true
+                description: customerId from TMF632
+          agreedToTerms:
+            type: boolean
+            required: true
+            description: Customer must agree to LMT Terms and Conditions. Must be true to proceed.
+          agreedToPrivacyPolicy:
+            type: boolean
+            required: true
+            description: Customer must agree to LMT Privacy Policy. Must be true to proceed.
+          marketingConsent:
+            type: boolean
+            required: false
+            description: Optional — customer consent for marketing communications.
+          consentTimestamp:
+            type: datetime
+            required: false
+        example:
+          relatedParty:
+            id: "CUST-DB-99812"
+          agreedToTerms: true
+          agreedToPrivacyPolicy: true
+          marketingConsent: false
+          consentTimestamp: "2026-08-05T10:01:00Z"
+    responses:
+      201:
+        description: Consent recorded — privacy profile active
+        body:
+          application/json:
+            example:
+              id: "PRIV-LMT-99812"
+              href: "/privacyManagement/v4/privacyProfile/PRIV-LMT-99812"
+              status: "ACTIVE"
+              relatedParty:
+                id: "CUST-DB-99812"
+              agreedToTerms: true
+              agreedToPrivacyPolicy: true
+              marketingConsent: false
+              consentTimestamp: "2026-08-05T10:01:00Z"
+      400:
+        description: Consent gate rejected — terms or privacy policy not accepted
+        body:
+          application/json:
+            examples:
+              termsNotAccepted:
+                description: agreedToTerms is false
+                value:
+                  code: "400"
+                  reason: "CONSENT_REQUIRED"
+                  message: "Terms and Conditions must be accepted before an order can be placed."
+                  status: "400"
+              privacyNotAccepted:
+                description: agreedToPrivacyPolicy is false
+                value:
+                  code: "400"
+                  reason: "CONSENT_REQUIRED"
+                  message: "Privacy Policy must be accepted before an order can be placed."
+                  status: "400"
+
+  /{privacyProfileId}:
+    get:
+      displayName: Retrieve Privacy Profile
+      description: Returns consent record for a given privacyProfileId. Used by TMF622 to verify consent exists before order processing.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                id: "PRIV-LMT-99812"
+                href: "/privacyManagement/v4/privacyProfile/PRIV-LMT-99812"
+                status: "ACTIVE"
+                relatedParty:
+                  id: "CUST-DB-99812"
+                agreedToTerms: true
+                agreedToPrivacyPolicy: true
+                marketingConsent: false
+        404:
+          body:
+            application/json:
+              example:
+                code: "404"
+                reason: "PRIVACY_PROFILE_NOT_FOUND"
+                message: "No privacy profile found for id PRIV-LMT-99812."
+                status: "404"

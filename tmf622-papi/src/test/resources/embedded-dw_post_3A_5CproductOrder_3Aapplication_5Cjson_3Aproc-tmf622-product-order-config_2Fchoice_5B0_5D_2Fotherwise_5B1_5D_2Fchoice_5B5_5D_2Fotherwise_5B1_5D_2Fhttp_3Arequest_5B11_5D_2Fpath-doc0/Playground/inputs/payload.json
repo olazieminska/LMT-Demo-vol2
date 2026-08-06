@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "channel": "dui",
+    "recipient": "risus"
+  },
+  "orderItem": [
+    {
+      "productOffering": {
+        "id": "Nam"
+      },
+      "action": "dolor",
+      "id": "Fusce"
+    }
+  ],
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit.",
+  "payment": {
+    "amount": 53,
+    "currency": "dolor",
+    "cardToken": "nibh"
+  },
+  "relatedParty": {
+    "privacyProfileId": "libero",
+    "billingAccountId": "Aliquam",
+    "id": "dui"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "basicConstraints": 72,
+  "criticalExtensionOIDs": [
+    "vitae",
+    "Fusce"
+  ],
+  "extendedKeyUsage": [
+    "Aliquam",
+    "dui",
+    "eget"
+  ],
+  "extensions": [
+    {
+      "criticality": true,
+      "oid": "amet"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Casey",
+      "type": 92
+    }
+  ],
+  "issuerDN": {
+    "commonName": "dolor",
+    "name": "Alena"
+  },
+  "issuerUniqueID": [
+    true,
+    true,
+    true
+  ],
+  "issuerX500Principal": {
+    "name": "Caleb"
+  },
+  "keyUsage": [
+    false,
+    false,
+    false
+  ],
+  "name": "Abel",
+  "nonCriticalExtensionOIDs": [
+    "Nam",
+    "dictum"
+  ],
+  "notAfter": "2024-11-28",
+  "notBefore": "2026-01-28",
+  "publicKey": {
+    "algorithm": "venenatis",
+    "modulus": 44,
+    "params": 67,
+    "publicKey": "Nunc"
+  },
+  "serialNumber": 26,
+  "serialNumberObject": {
+    "serialNumber": 34
+  },
+  "sigAlgName": "eros",
+  "sigAlgOID": "dolor",
+  "subjectAlternativeNames": [
+    {
+      "name": "Chang",
+      "type": 12
+    }
+  ],
+  "subjectDN": {
+    "commonName": "tincidunt",
+    "name": "Alexis"
+  },
+  "subjectX500Principal": {
+    "name": "Colby"
+  },
+  "type": "Nunc",
+  "version": 5
+}

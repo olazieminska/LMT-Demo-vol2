@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/azieminska/Desktop/DemoLMT-v2/raml-specs/proc-tmf632-party-api)",
+      "Bash(mkdir -p /Users/azieminska/Desktop/DemoLMT-v2/raml-specs/proc-tmf666-account-api)",
+      "Bash(mkdir -p /Users/azieminska/Desktop/DemoLMT-v2/raml-specs/proc-tmf679-poq-api)",
+      "Bash(mkdir -p /Users/azieminska/Desktop/DemoLMT-v2/raml-specs/proc-tmf680-privacy-api)",
+      "Bash(mkdir -p /Users/azieminska/Desktop/DemoLMT-v2/raml-specs/proc-tmf622-product-order-api)"
+    ]
+  }
+}

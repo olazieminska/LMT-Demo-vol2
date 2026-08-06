@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "channel": "tincidunt",
+    "recipient": "consectetur"
+  },
+  "orderItem": [
+    {
+      "productOffering": {
+        "id": "In"
+      },
+      "action": "elit",
+      "id": "lectus"
+    }
+  ],
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui.",
+  "payment": {
+    "amount": 46,
+    "currency": "adipiscing",
+    "cardToken": "tempor"
+  },
+  "relatedParty": {
+    "privacyProfileId": "sodales",
+    "billingAccountId": "justo",
+    "id": "sodales"
+  }
+}

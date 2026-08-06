@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "channel": "tempor",
+    "recipient": "Nam"
+  },
+  "orderItem": [
+    {
+      "productOffering": {
+        "id": "ut"
+      },
+      "action": "Fusce",
+      "id": "nibh"
+    }
+  ],
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus.",
+  "payment": {
+    "amount": 23,
+    "currency": "dolor",
+    "cardToken": "semper"
+  },
+  "relatedParty": {
+    "privacyProfileId": "amet",
+    "billingAccountId": "felis",
+    "id": "lorem"
+  }
+}

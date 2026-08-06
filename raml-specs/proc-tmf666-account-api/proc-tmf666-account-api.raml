@@ -1,0 +1,116 @@
+#%RAML 1.0
+title: TMF666 Account Management Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/accountManagement/v4
+mediaType: application/json
+
+types:
+  ErrorResponse:
+    type: object
+    properties:
+      code: string
+      reason: string
+      message: string
+
+documentation:
+  - title: Overview
+    content: |
+      Process API implementing TMF666 Account Management.
+      Creates a non-resident billing account linked to a verified individual,
+      using card payment as the billing method — no local IBAN required.
+      Orchestrates: customer-account-sapi POST /billing-accounts.
+
+/billingAccount:
+  post:
+    displayName: Create Billing Account
+    description: |
+      Creates a TMF-compliant billing account for a non-resident customer.
+      Links to a verified individual via relatedParty[0].id (customerId from TMF632).
+      Sets accountType to B2C_NonResident and paymentMethod to CreditCard.
+      Calls customer-account-sapi POST /billing-accounts.
+    body:
+      application/json:
+        type: object
+        properties:
+          name:
+            type: string
+            required: true
+          accountType:
+            type: string
+            required: true
+            enum: [B2C_NonResident]
+          paymentMethod:
+            type: string
+            required: true
+            enum: [CreditCard]
+          relatedParty:
+            type: array
+            required: true
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  required: true
+                role:
+                  type: string
+                  required: true
+        example:
+          name: Amelie Muller Billing Account
+          accountType: B2C_NonResident
+          paymentMethod: CreditCard
+          relatedParty:
+            - id: CUST-DB-99812
+              role: customer
+    responses:
+      201:
+        description: Billing account created successfully
+        body:
+          application/json:
+            example:
+              id: BAC-DB-99812
+              href: /accountManagement/v4/billingAccount/BAC-DB-99812
+              name: Amelie Muller Billing Account
+              accountType: B2C_NonResident
+              paymentMethod: CreditCard
+              status: ACTIVE
+              relatedParty:
+                - id: CUST-DB-99812
+                  role: customer
+      400:
+        description: Missing or invalid relatedParty customerId
+        body:
+          application/json:
+            type: ErrorResponse
+      422:
+        description: Billing account setup failed in downstream system
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              code: "422"
+              reason: ERR_BILLING_ACCOUNT_SETUP
+              message: Unable to create billing account for customer CUST-DB-99812.
+
+  /{billingAccountId}:
+    get:
+      displayName: Retrieve Billing Account
+      description: Returns the TMF BillingAccount entity for a given billingAccountId.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                id: BAC-DB-99812
+                href: /accountManagement/v4/billingAccount/BAC-DB-99812
+                name: Amelie Muller Billing Account
+                accountType: B2C_NonResident
+                paymentMethod: CreditCard
+                status: ACTIVE
+                relatedParty:
+                  - id: CUST-DB-99812
+                    role: customer
+        404:
+          body:
+            application/json:
+              type: ErrorResponse

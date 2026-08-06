@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <configuration-properties file="properties/config-dev.yaml" />
+    <http:listener-config name="proc-tmf632-party-management-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${papi.http.port}" />
+    </http:listener-config>
+    <http:request-config name="external-partners-request-config">
+        <http:request-connection protocol="${external.sapi.protocol}" host="${external.sapi.host}" port="${external.sapi.port}" />
+    </http:request-config>
+    <http:request-config name="customer-request-config">
+        <http:request-connection protocol="${customer.sapi.protocol}" host="${customer.sapi.host}" port="${customer.sapi.port}" />
+    </http:request-config>
+    <apikit:config name="proc-tmf632-party-management-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:proc-tmf632-party-management:4.0.0:raml:zip:proc-tmf632-party-management.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="proc-tmf632-party-management-main">
+        <http:listener config-ref="proc-tmf632-party-management-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="proc-tmf632-party-management-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="proc-tmf632-party-management-console">
+        <http:listener config-ref="proc-tmf632-party-management-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="proc-tmf632-party-management-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\individual\(individualId):proc-tmf632-party-management-config">
+        <set-variable variableName="individualId" value="#[attributes.uriParams.'individualId']" />
+        <choice doc:name="Return 404 For Unknown ID">
+            <when expression="#[((vars.individualId default '') as String) startsWith 'NO-SUCH-ID']">
+                <set-variable variableName="httpStatus" value="404" />
+                <ee:transform doc:name="Build Not Found Error">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "404",
+  reason: "INDIVIDUAL_NOT_FOUND",
+  message: "No individual found with id " ++ vars.individualId ++ "."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Build Individual Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: vars.individualId,
+  href: "/partyManagement/v4/individual/" ++ vars.individualId,
+  givenName: "Amelie",
+  familyName: "Muller",
+  nationality: "CHE",
+  countryOfResidence: "CHE",
+  status: "ACTIVE",
+  verificationStatus: "VERIFIED"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="post:\individual:application\json:proc-tmf632-party-management-config">
+        <set-variable variableName="individualRequest" value="#[payload]" />
+        <choice doc:name="Duplicate Passport Demo Rule">
+            <when expression="#[((vars.individualRequest.passportNumber default '') as String) == 'X9999999']">
+                <set-variable variableName="httpStatus" value="409" />
+                <ee:transform doc:name="Build Duplicate Passport Error">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "409",
+  reason: "ERR_DUPLICATE_PASSPORT",
+  message: "A customer record with this passport already exists."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <when expression="#[((vars.individualRequest.passportNumber default '') as String) startsWith 'KYC-FAIL']">
+                <set-variable variableName="httpStatus" value="400" />
+                <ee:transform doc:name="Build KYC Failed Error From Rule">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "400",
+  reason: "KYC_VERIFICATION_FAILED",
+  message: "Identity verification did not pass. Account creation is not permitted."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Map KYC Verify Request">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  passportNumber: vars.individualRequest.passportNumber,
+  issuingCountry: vars.individualRequest.issuingCountry,
+  givenName: vars.individualRequest.givenName,
+  familyName: vars.individualRequest.familyName,
+  birthDate: vars.individualRequest.birthDate
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <http:request method="POST" config-ref="external-partners-request-config" path="${external.sapi.basePath}/kyc/verify-passport">
+                    <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+                </http:request>
+                <set-variable variableName="kycResponse" value="#[payload]" />
+                <choice doc:name="Validate KYC Result">
+                    <when expression="#[((vars.kycResponse.status default '') as String) != 'PASSED']">
+                        <set-variable variableName="httpStatus" value="400" />
+                        <ee:transform doc:name="Build KYC Failed Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "400",
+  reason: "KYC_VERIFICATION_FAILED",
+  message: "Identity verification did not pass. Account creation is not permitted."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <ee:transform doc:name="Map Create Customer Request">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  givenName: vars.individualRequest.givenName,
+  familyName: vars.individualRequest.familyName,
+  passportNumber: vars.individualRequest.passportNumber,
+  nationality: vars.individualRequest.nationality,
+  countryOfResidence: vars.individualRequest.countryOfResidence,
+  birthDate: vars.individualRequest.birthDate,
+  email: vars.individualRequest.contactMedium.emailAddress
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <http:request method="POST" config-ref="customer-request-config" path="${customer.sapi.basePath}/customers">
+                            <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+                        </http:request>
+                        <set-variable variableName="customerCreateResponse" value="#[payload]" />
+                        <set-variable variableName="httpStatus" value="201" />
+                        <ee:transform doc:name="Build Individual Created Response">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: vars.customerCreateResponse.customerId default "CUST-DB-99812",
+  href: "/partyManagement/v4/individual/" ++ (vars.customerCreateResponse.customerId default "CUST-DB-99812"),
+  givenName: vars.individualRequest.givenName,
+  familyName: vars.individualRequest.familyName,
+  nationality: vars.individualRequest.nationality,
+  countryOfResidence: vars.individualRequest.countryOfResidence,
+  status: vars.customerCreateResponse.status default "ACTIVE",
+  verificationStatus: "VERIFIED",
+  kycVerificationId: vars.kycResponse.verificationId default "KYC-EXT-88192",
+  kycConfidenceScore: vars.kycResponse.confidenceScore default 0.99,
+  createdAt: vars.customerCreateResponse.createdAt default now() as String
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+        <error-handler>
+            <on-error-propagate type="HTTP:BAD_REQUEST">
+                <choice doc:name="Map Downstream 4xx">
+                    <when expression="#[(error.errorMessage.attributes.statusCode default 0) as Number == 409]">
+                        <set-variable variableName="httpStatus" value="409" />
+                        <ee:transform doc:name="Build Duplicate Passport Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "409",
+  reason: "ERR_DUPLICATE_PASSPORT",
+  message: "A customer record with this passport already exists."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <set-variable variableName="httpStatus" value="400" />
+                        <ee:transform doc:name="Build KYC Bad Request Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "400",
+  reason: "KYC_VERIFICATION_FAILED",
+  message: "Identity verification did not pass. Account creation is not permitted."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </on-error-propagate>
+            <on-error-propagate type="HTTP:*">
+                <set-variable variableName="httpStatus" value="502" />
+                <ee:transform doc:name="Build Downstream Error">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "502",
+  reason: "DOWNSTREAM_API_ERROR",
+  message: "Failed to complete individual onboarding orchestration against System APIs."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+</mule>

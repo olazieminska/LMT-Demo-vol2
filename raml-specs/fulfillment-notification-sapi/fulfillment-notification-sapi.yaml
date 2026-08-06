@@ -1,0 +1,55 @@
+#%RAML 1.0
+title: Fulfillment and Notification System API
+version: v1
+baseUri: https://api.lmt.lv/sapi/fulfillment-notification/v1
+mediaType: application/json
+
+/esim/provision:
+  post:
+    displayName: Provision eSIM Profile
+    description: Requests SM-DP+ server profile generation, LPA string release, and MSISDN allocation.
+    body:
+      application/json:
+        properties:
+          customerId: string
+          offeringId: string
+        example:
+          customerId: "CUST-DB-99812"
+          offeringId: "OFFERING_SWISS_CONNECT"
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              iccid: "8937100000000012345"
+              assignedMsisdn: "+37120001234"
+              smdpAddress: "smdp.lmt.lv"
+              activationCode: "LPA:1$smdp.lmt.lv$CONF-CODE-99812"
+              status: "RELEASED"
+              provisionedAt: "2026-08-04T10:02:15Z"
+
+/notifications/send:
+  post:
+    displayName: Dispatch Email or SMS Notification
+    description: Sends order confirmation and eSIM installation details to customer.
+    body:
+      application/json:
+        properties:
+          channel: 
+            enum: [Email, SMS]
+          recipient: string
+          templateId: string
+          activationCode: string
+        example:
+          channel: "Email"
+          recipient: "amelie.muller@example.ch"
+          templateId: "ESIM_ACTIVATION_TEMP"
+          activationCode: "LPA:1$smdp.lmt.lv$CONF-CODE-99812"
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              notificationId: "NOTIF-99102"
+              deliveryStatus: "DELIVERED"
+              sentAt: "2026-08-04T10:02:20Z"

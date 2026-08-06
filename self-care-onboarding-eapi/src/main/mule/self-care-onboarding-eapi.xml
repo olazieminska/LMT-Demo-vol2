@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <configuration-properties file="properties/config-dev.yaml" />
+    <http:listener-config name="self-care-onboarding-experience-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${eapi.http.port}" />
+    </http:listener-config>
+    <http:request-config name="tmf632-request-config">
+        <http:request-connection protocol="${tmf632.papi.protocol}" host="${tmf632.papi.host}" port="${tmf632.papi.port}" />
+    </http:request-config>
+    <http:request-config name="tmf622-request-config">
+        <http:request-connection protocol="${tmf622.papi.protocol}" host="${tmf622.papi.host}" port="${tmf622.papi.port}" />
+    </http:request-config>
+    <apikit:config name="self-care-onboarding-experience-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:self-care-onboarding-experience:1.0.0:raml:zip:self-care-onboarding-experience.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="self-care-onboarding-experience-main">
+        <http:listener config-ref="self-care-onboarding-experience-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="self-care-onboarding-experience-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Build Validation Error Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var details = (error.description default error.detailedDescription default "") as String
+---
+{
+  code: "400",
+  reason: "REQUEST_VALIDATION_ERROR",
+  message: if (isEmpty(details))
+             "Request payload does not match API contract. Check required fields, value formats, and content type."
+           else
+             details
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="self-care-onboarding-experience-console">
+        <http:listener config-ref="self-care-onboarding-experience-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="self-care-onboarding-experience-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\selfcare\v1\onboarding\(journeyId):self-care-onboarding-experience-config">
+        <logger level="INFO" doc:name="Log Journey Status Request" message='#[ "journeyStatus.request received" ]' />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="journeyId">attributes.uriParams.'journeyId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" doc:name="Log Journey Id" message='#[ "journeyStatus.journeyId=" ++ (vars.journeyId as String) ]' />
+        <choice doc:name="Mock Journey Scenarios">
+            <when expression="#[((vars.journeyId default '') as String) == 'JRNY-FAILED-PAYMENT-0001']">
+                <logger level="INFO" doc:name="Log Failed Payment Mock Scenario" message='#[ "journeyStatus.scenario=FAILED_PAYMENT_MOCK" ]' />
+                <ee:transform doc:name="Build Failed Payment Scenario">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  journeyId: vars.journeyId,
+  status: "FAILED_PAYMENT",
+  stepStates: {
+    identity: "COMPLETED",
+    order: "FAILED_PAYMENT",
+    payment: "DECLINED",
+    esim: "NOT_STARTED",
+    notification: "NOT_STARTED"
+  },
+  simulation: true,
+  simulatedComponent: "journeyStatus",
+  updatedAt: now() as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <when expression="#[((vars.journeyId default '') as String) == 'JRNY-FAILED-KYC-0001']">
+                <logger level="INFO" doc:name="Log Failed KYC Mock Scenario" message='#[ "journeyStatus.scenario=FAILED_KYC_MOCK" ]' />
+                <ee:transform doc:name="Build Failed KYC Scenario">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  journeyId: vars.journeyId,
+  status: "FAILED_KYC",
+  stepStates: {
+    identity: "FAILED_KYC",
+    order: "NOT_STARTED",
+    payment: "NOT_STARTED",
+    esim: "NOT_STARTED",
+    notification: "NOT_STARTED"
+  },
+  simulation: true,
+  simulatedComponent: "journeyStatus",
+  updatedAt: now() as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <logger level="INFO" doc:name="Log Completed Mock Scenario" message='#[ "journeyStatus.scenario=COMPLETED_MOCK" ]' />
+                <ee:transform doc:name="Build Completed Scenario">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  journeyId: vars.journeyId,
+  status: "ONBOARDING_COMPLETED",
+  stepStates: {
+    identity: "COMPLETED",
+    order: "COMPLETED",
+    payment: "COMPLETED",
+    esim: "COMPLETED",
+    notification: "COMPLETED"
+  },
+  simulation: true,
+  simulatedComponent: "journeyStatus",
+  updatedAt: now() as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\selfcare\v1\subscriptions\(customerId):self-care-onboarding-experience-config">
+        <logger level="INFO" doc:name="Log Subscription Request" message='#[ "subscriptionView.request received" ]' />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="customerId">attributes.uriParams.'customerId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" doc:name="Log Subscription CustomerId" message='#[ "subscriptionView.customerId=" ++ (vars.customerId as String) ]' />
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  customerId: "CUST-DB-99812",
+  products: [
+    {
+      id: "PROD-99812",
+      status: "ACTIVE",
+      msisdn: "+37120001234",
+      planName: "Switzerland Connect Plan",
+      allowances: {
+        inLatvia: "Unlimited data/voice/SMS",
+        toSwitzerlandMinutes: 60
+      },
+      esim: {
+        iccid: "8937100000000012345",
+        activationCode: "LPA:1\$smdp.lmt.lv\$CONF-CODE-99812",
+        state: "RELEASED"
+      }
+    }
+  ],
+  simulation: true,
+  simulatedComponent: "subscriptionView",
+  updatedAt: "2026-08-05T10:03:00Z"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\selfcare\v1\onboarding\eligibility:application\json:self-care-onboarding-experience-config">
+        <logger level="INFO" doc:name="Log Eligibility Request" message='#[ "eligibility.request received" ]' />
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  journeyId: "JRNY-20260805-0001",
+  qualificationResult: "qualified",
+  offer: {
+    offeringId: "OFFERING_SWISS_CONNECT",
+    name: "Switzerland Connect Plan",
+    price: 19.99,
+    currency: "EUR",
+    allowances: {
+      inLatvia: "Unlimited data/voice/SMS",
+      toSwitzerlandMinutes: 60
+    }
+  },
+  simulation: true,
+  simulatedComponent: "eligibility",
+  timestamp: "2026-08-05T09:59:00Z"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\selfcare\v1\onboarding:application\json:self-care-onboarding-experience-config">
+        <logger level="INFO" doc:name="Log Onboarding Request" message='#[ "onboarding.request received" ]' />
+        <set-variable variableName="onboardingRequest" value="#[payload]" />
+        <set-variable variableName="journeyId" value="#['JRNY-' ++ (now() as String {format: 'yyyyMMddHHmmss'})]" />
+        <logger level="INFO" doc:name="Log Journey Created" message='#[ "onboarding.journeyId=" ++ vars.journeyId ]' />
+        <choice doc:name="Validate Consent">
+            <when expression="#[(vars.onboardingRequest.consent.agreedToTerms default false) != true or (vars.onboardingRequest.consent.privacyAccepted default false) != true]">
+                <logger level="WARN" doc:name="Log Consent Rejected" message='#[ "onboarding.rejected reason=CONSENT_REQUIRED" ]' />
+                <set-variable variableName="httpStatus" value="400" />
+                <ee:transform doc:name="Build Consent Error">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "400",
+  reason: "CONSENT_REQUIRED",
+  message: "Terms and privacy conditions must be accepted to proceed."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <when expression="#[((vars.onboardingRequest.identity.passportNumber default '') as String) == 'X9999999']">
+                <logger level="WARN" doc:name="Log Duplicate Passport Rule" message='#[ "onboarding.rejected reason=ERR_DUPLICATE_PASSPORT" ]' />
+                <set-variable variableName="httpStatus" value="409" />
+                <ee:transform doc:name="Build Duplicate Passport Error Local Rule">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "409",
+  reason: "ERR_DUPLICATE_PASSPORT",
+  message: "A customer record with this passport already exists."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <when expression="#[((vars.onboardingRequest.identity.passportNumber default '') as String) startsWith 'KYC-FAIL']">
+                <logger level="WARN" doc:name="Log KYC Fail Rule" message='#[ "onboarding.rejected reason=KYC_VERIFICATION_FAILED" ]' />
+                <set-variable variableName="httpStatus" value="400" />
+                <ee:transform doc:name="Build KYC Failed Error Local Rule">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "400",
+  reason: "KYC_VERIFICATION_FAILED",
+  message: "Identity verification did not pass. Account creation is not permitted."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <when expression="#[((vars.onboardingRequest.payment.cardToken default '') as String) startsWith 'tok_declined']">
+                <logger level="WARN" doc:name="Log Payment Decline Rule" message='#[ "onboarding.rejected reason=PAYMENT_DECLINED" ]' />
+                <set-variable variableName="httpStatus" value="402" />
+                <ee:transform doc:name="Build Payment Declined Error Local Rule">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "402",
+  reason: "PAYMENT_DECLINED",
+  message: "Card charge failed. Order has been cancelled and will not proceed to fulfilment."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <logger level="INFO" doc:name="Log Start Live Orchestration" message='#[ "onboarding.orchestration=START" ]' />
+                <ee:transform doc:name="Map TMF632 Request">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  givenName: vars.onboardingRequest.identity.givenName,
+  familyName: vars.onboardingRequest.identity.familyName,
+  passportNumber: vars.onboardingRequest.identity.passportNumber,
+  issuingCountry: vars.onboardingRequest.identity.issuingCountry,
+  nationality: vars.onboardingRequest.identity.nationality,
+  countryOfResidence: vars.onboardingRequest.identity.countryOfResidence,
+  birthDate: vars.onboardingRequest.identity.birthDate,
+  contactMedium: {
+    emailAddress: vars.onboardingRequest.identity.email
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="Log TMF632 Request Payload" message='#[ "tmf632.request=" ++ write(payload, "application/json") ]' />
+                <http:request method="POST" config-ref="tmf632-request-config" path="${tmf632.papi.basePath}/individual">
+                    <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+                </http:request>
+                <set-variable variableName="tmf632Response" value="#[payload]" />
+                <logger level="INFO" doc:name="Log TMF632 Response" message='#[ "tmf632.response=" ++ write(vars.tmf632Response, "application/json") ]' />
+                <ee:transform doc:name="Map TMF622 Request">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  description: "Switzerland Connect Plan - eSIM order for " ++ (vars.onboardingRequest.identity.givenName default "customer"),
+  relatedParty: {
+    id: vars.tmf632Response.id,
+    billingAccountId: vars.onboardingRequest.billingAccountId default "BAC-DB-99812",
+    privacyProfileId: vars.onboardingRequest.consent.privacyProfileId default "PRIV-LMT-99812"
+  },
+  orderItem: [
+    {
+      id: "1",
+      action: "add",
+      productOffering: {
+        id: vars.onboardingRequest.selectedOffer.offeringId
+      }
+    }
+  ],
+  payment: {
+    cardToken: vars.onboardingRequest.payment.cardToken,
+    amount: vars.onboardingRequest.payment.amount,
+    currency: vars.onboardingRequest.payment.currency
+  },
+  notification: {
+    channel: vars.onboardingRequest.notification.channel,
+    recipient: vars.onboardingRequest.notification.recipient
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="Log TMF622 Request Payload" message='#[ "tmf622.request=" ++ write(payload, "application/json") ]' />
+                <http:request method="POST" config-ref="tmf622-request-config" path="${tmf622.papi.basePath}/productOrder">
+                    <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+                </http:request>
+                <set-variable variableName="tmf622Response" value="#[payload]" />
+                <logger level="INFO" doc:name="Log TMF622 Response" message='#[ "tmf622.response=" ++ write(vars.tmf622Response, "application/json") ]' />
+                <set-variable variableName="httpStatus" value="201" />
+                <ee:transform doc:name="Build Onboarding Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  journeyId: vars.journeyId,
+  status: "ONBOARDING_COMPLETED",
+  customer: {
+    id: vars.tmf632Response.id,
+    verificationStatus: vars.tmf632Response.verificationStatus default "VERIFIED"
+  },
+  order: {
+    id: vars.tmf622Response.id,
+    state: vars.tmf622Response.state,
+    amount: vars.tmf622Response.payment.amount default vars.onboardingRequest.payment.amount,
+    currency: vars.tmf622Response.payment.currency default vars.onboardingRequest.payment.currency
+  },
+  esim: {
+    iccid: vars.tmf622Response.esim.iccid,
+    assignedMsisdn: vars.tmf622Response.esim.assignedMsisdn,
+    activationCode: vars.tmf622Response.esim.activationCode,
+    status: vars.tmf622Response.esim.status
+  },
+  notification: {
+    channel: vars.onboardingRequest.notification.channel,
+    deliveryStatus: vars.tmf622Response.notification.deliveryStatus default "DELIVERED"
+  },
+  createdAt: now() as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="Log Onboarding Completed" message='#[ "onboarding.completed journeyId=" ++ vars.journeyId ]' />
+            </otherwise>
+        </choice>
+        <error-handler>
+            <on-error-propagate type="HTTP:*">
+                <set-variable variableName="downstreamStatus" value="#[(error.errorMessage.attributes.statusCode default 0) as Number]" />
+                <logger level="ERROR" doc:name="Log Downstream HTTP Error" message='#[ "onboarding.downstream.error status=" ++ (vars.downstreamStatus as String) ]' />
+                <choice doc:name="Map Downstream HTTP Errors">
+                    <when expression="#[vars.downstreamStatus == 400]">
+                        <set-variable variableName="httpStatus" value="400" />
+                        <ee:transform doc:name="Build Downstream 400 Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "400",
+  reason: "REQUEST_REJECTED",
+  message: "Downstream Process API rejected the onboarding request."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <when expression="#[vars.downstreamStatus == 402]">
+                        <set-variable variableName="httpStatus" value="402" />
+                        <ee:transform doc:name="Build Payment Declined Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "402",
+  reason: "PAYMENT_DECLINED",
+  message: "Card charge failed. Order has been cancelled and will not proceed to fulfilment."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <when expression="#[vars.downstreamStatus == 409]">
+                        <set-variable variableName="httpStatus" value="409" />
+                        <ee:transform doc:name="Build Duplicate Passport Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "409",
+  reason: "ERR_DUPLICATE_PASSPORT",
+  message: "A customer record with this passport already exists."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <when expression="#[vars.downstreamStatus == 401 or vars.downstreamStatus == 403]">
+                        <set-variable variableName="httpStatus" value="502" />
+                        <ee:transform doc:name="Build Downstream Auth Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "502",
+  reason: "DOWNSTREAM_AUTH_ERROR",
+  message: "Downstream Process API authentication/authorization failed."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <when expression="#[vars.downstreamStatus == 429]">
+                        <set-variable variableName="httpStatus" value="502" />
+                        <ee:transform doc:name="Build Rate Limit Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "502",
+  reason: "DOWNSTREAM_RATE_LIMITED",
+  message: "Downstream Process API rate limit was reached."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <set-variable variableName="httpStatus" value="502" />
+                        <ee:transform doc:name="Build Generic Downstream Error">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "502",
+  reason: "DOWNSTREAM_API_ERROR",
+  message: "Failed to complete onboarding orchestration against Process APIs."
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </on-error-propagate>
+            <on-error-propagate type="ANY">
+                <set-variable variableName="httpStatus" value="500" />
+                <logger level="ERROR" doc:name="Log Internal Orchestration Error" message='#[ "onboarding.internal.error " ++ (error.description default "unknown") ]' />
+                <ee:transform doc:name="Build Internal Error">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "500",
+  reason: "INTERNAL_ORCHESTRATION_ERROR",
+  message: "Experience API failed to process onboarding request."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+</mule>

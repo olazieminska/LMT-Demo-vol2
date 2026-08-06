@@ -1,0 +1,73 @@
+{
+  "basicConstraints": 11,
+  "criticalExtensionOIDs": [
+    "mi",
+    "lectus"
+  ],
+  "extendedKeyUsage": [
+    "mi",
+    "Lorem",
+    "pulvinar"
+  ],
+  "extensions": [
+    {
+      "criticality": true,
+      "oid": "a"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Agnus",
+      "type": 66
+    }
+  ],
+  "issuerDN": {
+    "commonName": "Nunc",
+    "name": "Columbus"
+  },
+  "issuerUniqueID": [
+    true,
+    false
+  ],
+  "issuerX500Principal": {
+    "name": "Adela"
+  },
+  "keyUsage": [
+    false,
+    false
+  ],
+  "name": "Alberta",
+  "nonCriticalExtensionOIDs": [
+    "eros",
+    "Lorem"
+  ],
+  "notAfter": "2021-12-06",
+  "notBefore": "2023-03-12",
+  "publicKey": {
+    "algorithm": "sodales",
+    "modulus": 7,
+    "params": 46,
+    "publicKey": "lectus"
+  },
+  "serialNumber": 49,
+  "serialNumberObject": {
+    "serialNumber": 19
+  },
+  "sigAlgName": "risus",
+  "sigAlgOID": "sodales",
+  "subjectAlternativeNames": [
+    {
+      "name": "Ana",
+      "type": 40
+    }
+  ],
+  "subjectDN": {
+    "commonName": "tempor",
+    "name": "Alita"
+  },
+  "subjectX500Principal": {
+    "name": "Clayton"
+  },
+  "type": "felis",
+  "version": 93
+}

@@ -1,0 +1,76 @@
+{
+  "basicConstraints": 47,
+  "criticalExtensionOIDs": [
+    "dolor",
+    "justo"
+  ],
+  "extendedKeyUsage": [
+    "Pellentesque",
+    "consectetur",
+    "dolor"
+  ],
+  "extensions": [
+    {
+      "criticality": false,
+      "oid": "viverra"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Albertine",
+      "type": 60
+    }
+  ],
+  "issuerDN": {
+    "commonName": "nibh",
+    "name": "Abe"
+  },
+  "issuerUniqueID": [
+    true,
+    false,
+    false
+  ],
+  "issuerX500Principal": {
+    "name": "Abbie"
+  },
+  "keyUsage": [
+    true,
+    true,
+    true
+  ],
+  "name": "Akilah",
+  "nonCriticalExtensionOIDs": [
+    "aliquam",
+    "at",
+    "tempor"
+  ],
+  "notAfter": "2025-07-27",
+  "notBefore": "2024-07-25",
+  "publicKey": {
+    "algorithm": "consectetur",
+    "modulus": 80,
+    "params": 10,
+    "publicKey": "felis"
+  },
+  "serialNumber": 26,
+  "serialNumberObject": {
+    "serialNumber": 51
+  },
+  "sigAlgName": "dui",
+  "sigAlgOID": "adipiscing",
+  "subjectAlternativeNames": [
+    {
+      "name": "Clemente",
+      "type": 4
+    }
+  ],
+  "subjectDN": {
+    "commonName": "sed",
+    "name": "Clay"
+  },
+  "subjectX500Principal": {
+    "name": "Damon"
+  },
+  "type": "consectetur",
+  "version": 25
+}

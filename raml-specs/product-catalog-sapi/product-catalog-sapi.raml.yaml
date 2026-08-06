@@ -1,0 +1,35 @@
+#%RAML 1.0
+title: Product Catalog System API
+version: v1
+baseUri: https://api.lmt.lv/sapi/product-catalog/v1
+mediaType: application/json
+
+/offerings/{offeringId}:
+  get:
+    displayName: Get Product Offering Details
+    description: Fetches price, allowances, and non-resident eligibility parameters for a plan.
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              offeringId: "OFFERING_SWISS_CONNECT"
+              name: "Switzerland Connect Plan"
+              price:
+                amount: 19.99
+                currency: "EUR"
+                billingPeriod: "Monthly"
+              allowances:
+                latviaData: "UNLIMITED"
+                latviaVoiceSms: "UNLIMITED"
+                switzerlandVoiceMins: 60
+              eligibilityRules:
+                passportAllowed: true
+                localBankRequired: false
+      404:
+        description: Product Offering Not Found
+        body:
+          application/json:
+            example:
+              code: "OFFERING_NOT_FOUND"
+              reason: "Product offering offeringId does not exist."

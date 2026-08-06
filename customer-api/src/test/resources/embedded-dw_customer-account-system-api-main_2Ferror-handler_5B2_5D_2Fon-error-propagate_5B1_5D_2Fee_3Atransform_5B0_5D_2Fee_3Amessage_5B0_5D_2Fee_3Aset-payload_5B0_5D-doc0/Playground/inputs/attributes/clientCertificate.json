@@ -1,0 +1,73 @@
+{
+  "basicConstraints": 6,
+  "criticalExtensionOIDs": [
+    "sodales",
+    "faucibus",
+    "dolor"
+  ],
+  "extendedKeyUsage": [
+    "nibh",
+    "felis"
+  ],
+  "extensions": [
+    {
+      "criticality": true,
+      "oid": "arcu"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Abbey",
+      "type": 18
+    }
+  ],
+  "issuerDN": {
+    "commonName": "erat",
+    "name": "Danny"
+  },
+  "issuerUniqueID": [
+    false,
+    true
+  ],
+  "issuerX500Principal": {
+    "name": "Alethia"
+  },
+  "keyUsage": [
+    true,
+    false
+  ],
+  "name": "Aiko",
+  "nonCriticalExtensionOIDs": [
+    "sodales",
+    "lorem"
+  ],
+  "notAfter": "2024-06-10",
+  "notBefore": "2024-06-04",
+  "publicKey": {
+    "algorithm": "ipsum",
+    "modulus": 8,
+    "params": 18,
+    "publicKey": "molestie"
+  },
+  "serialNumber": 76,
+  "serialNumberObject": {
+    "serialNumber": 41
+  },
+  "sigAlgName": "felis",
+  "sigAlgOID": "semper",
+  "subjectAlternativeNames": [
+    {
+      "name": "Adelina",
+      "type": 63
+    }
+  ],
+  "subjectDN": {
+    "commonName": "felis",
+    "name": "Agripina"
+  },
+  "subjectX500Principal": {
+    "name": "Aida"
+  },
+  "type": "nunc",
+  "version": 7
+}

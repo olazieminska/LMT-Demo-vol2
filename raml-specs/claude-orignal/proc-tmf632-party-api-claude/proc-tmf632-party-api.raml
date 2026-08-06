@@ -1,0 +1,136 @@
+#%RAML 1.0
+title: TMF632 Party Management Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/partyManagement/v4
+mediaType: application/json
+
+documentation:
+  - title: Overview
+    content: |
+      Process API implementing TMF632 Party Management.
+      Onboards a non-resident individual using passport-based identity verification.
+      Orchestrates: external-partners-sapi (KYC) → customer-account-sapi (create customer).
+      Simulation: KYC call to external IDV provider is simulated — clearly identified as such.
+
+/individual:
+  post:
+    displayName: Create Individual (Non-Resident Onboarding)
+    description: |
+      Registers a new non-resident individual using passport identity.
+      Step 1 — Calls external-partners-sapi POST /kyc/verify-passport (simulated IDV).
+      Step 2 — Calls customer-account-sapi POST /customers.
+      Blocks on KYC failure. Detects and surfaces duplicate passport as structured 409.
+    body:
+      application/json:
+        properties:
+          givenName:
+            type: string
+            required: true
+          familyName:
+            type: string
+            required: true
+          passportNumber:
+            type: string
+            required: true
+          issuingCountry:
+            type: string
+            required: true
+            description: ISO 3166-1 alpha-3 country code (e.g. CHE)
+          nationality:
+            type: string
+            required: true
+            description: ISO 3166-1 alpha-3 country code
+          countryOfResidence:
+            type: string
+            required: true
+            description: ISO 3166-1 alpha-3 country code
+          birthDate:
+            type: date-only
+            required: true
+          contactMedium:
+            type: object
+            required: true
+            properties:
+              emailAddress:
+                type: string
+                required: true
+        example:
+          givenName: "Amelie"
+          familyName: "Müller"
+          passportNumber: "X1234567"
+          issuingCountry: "CHE"
+          nationality: "CHE"
+          countryOfResidence: "CHE"
+          birthDate: "2002-05-14"
+          contactMedium:
+            emailAddress: "amelie.muller@example.ch"
+    responses:
+      201:
+        description: Individual created and identity verified successfully
+        body:
+          application/json:
+            example:
+              id: "CUST-DB-99812"
+              href: "/partyManagement/v4/individual/CUST-DB-99812"
+              givenName: "Amelie"
+              familyName: "Müller"
+              nationality: "CHE"
+              countryOfResidence: "CHE"
+              status: "ACTIVE"
+              verificationStatus: "VERIFIED"
+              kycVerificationId: "KYC-EXT-88192"
+              kycConfidenceScore: 0.99
+              createdAt: "2026-08-05T10:00:00Z"
+      400:
+        description: KYC identity verification failed — account not created
+        body:
+          application/json:
+            example:
+              code: "400"
+              reason: "KYC_VERIFICATION_FAILED"
+              message: "Identity verification did not pass. Account creation is not permitted."
+              status: "400"
+      409:
+        description: Duplicate passport — individual already registered
+        body:
+          application/json:
+            example:
+              code: "409"
+              reason: "ERR_DUPLICATE_PASSPORT"
+              message: "A customer record with passport X1234567 already exists."
+              status: "409"
+      422:
+        description: Billing account setup failure
+        body:
+          application/json:
+            example:
+              code: "422"
+              reason: "ERR_BILLING_ACCOUNT_SETUP"
+              message: "Unable to create billing account for this customer."
+              status: "422"
+
+  /{individualId}:
+    get:
+      displayName: Retrieve Individual
+      description: Returns the TMF Individual entity for a given customerId. Used by downstream PAPIs to retrieve verified identity and residency for eligibility evaluation.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                id: "CUST-DB-99812"
+                href: "/partyManagement/v4/individual/CUST-DB-99812"
+                givenName: "Amelie"
+                familyName: "Müller"
+                nationality: "CHE"
+                countryOfResidence: "CHE"
+                status: "ACTIVE"
+                verificationStatus: "VERIFIED"
+        404:
+          body:
+            application/json:
+              example:
+                code: "404"
+                reason: "INDIVIDUAL_NOT_FOUND"
+                message: "No individual found with id CUST-DB-99812."
+                status: "404"

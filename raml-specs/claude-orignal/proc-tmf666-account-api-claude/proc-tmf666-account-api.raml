@@ -1,0 +1,117 @@
+#%RAML 1.0
+title: TMF666 Account Management Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/accountManagement/v4
+mediaType: application/json
+
+documentation:
+  - title: Overview
+    content: |
+      Process API implementing TMF666 Account Management.
+      Creates a non-resident billing account linked to a verified individual,
+      using card payment as the billing method — no local IBAN required.
+      Orchestrates: customer-account-sapi POST /billing-accounts.
+
+/billingAccount:
+  post:
+    displayName: Create Billing Account
+    description: |
+      Creates a TMF-compliant billing account for a non-resident customer.
+      Links to a verified individual via relatedParty.id (customerId from TMF632).
+      Sets accountType to B2C_NonResident and paymentMethod to CreditCard.
+      Calls customer-account-sapi POST /billing-accounts.
+    body:
+      application/json:
+        properties:
+          name:
+            type: string
+            required: true
+            description: Display name for the billing account
+          accountType:
+            type: string
+            required: true
+            enum: [B2C_NonResident]
+          paymentMethod:
+            type: string
+            required: true
+            enum: [CreditCard]
+          relatedParty:
+            type: object
+            required: true
+            properties:
+              id:
+                type: string
+                required: true
+                description: customerId returned by TMF632 proc-tmf632-party-api
+              role:
+                type: string
+                required: true
+                enum: [customer]
+        example:
+          name: "Amelie Müller Billing Account"
+          accountType: "B2C_NonResident"
+          paymentMethod: "CreditCard"
+          relatedParty:
+            id: "CUST-DB-99812"
+            role: "customer"
+    responses:
+      201:
+        description: Billing account created successfully
+        body:
+          application/json:
+            example:
+              id: "BAC-DB-99812"
+              href: "/accountManagement/v4/billingAccount/BAC-DB-99812"
+              name: "Amelie Müller Billing Account"
+              accountType: "B2C_NonResident"
+              paymentMethod: "CreditCard"
+              status: "ACTIVE"
+              relatedParty:
+                id: "CUST-DB-99812"
+                role: "customer"
+              createdAt: "2026-08-05T10:00:30Z"
+      400:
+        description: Missing or invalid relatedParty customerId
+        body:
+          application/json:
+            example:
+              code: "400"
+              reason: "INVALID_RELATED_PARTY"
+              message: "relatedParty.id is required and must reference a valid verified individual."
+              status: "400"
+      422:
+        description: Billing account setup failed in downstream system
+        body:
+          application/json:
+            example:
+              code: "422"
+              reason: "ERR_BILLING_ACCOUNT_SETUP"
+              message: "Unable to create billing account for customer CUST-DB-99812."
+              status: "422"
+
+  /{billingAccountId}:
+    get:
+      displayName: Retrieve Billing Account
+      description: Returns the TMF BillingAccount entity for a given billingAccountId.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                id: "BAC-DB-99812"
+                href: "/accountManagement/v4/billingAccount/BAC-DB-99812"
+                name: "Amelie Müller Billing Account"
+                accountType: "B2C_NonResident"
+                paymentMethod: "CreditCard"
+                status: "ACTIVE"
+                relatedParty:
+                  id: "CUST-DB-99812"
+                  role: "customer"
+        404:
+          body:
+            application/json:
+              example:
+                code: "404"
+                reason: "BILLING_ACCOUNT_NOT_FOUND"
+                message: "No billing account found with id BAC-DB-99812."
+                status: "404"

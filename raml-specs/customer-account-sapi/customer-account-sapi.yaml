@@ -1,0 +1,66 @@
+#%RAML 1.0
+title: Customer Account System API
+version: v1
+baseUri: https://api.lmt.lv/sapi/customer-account/v1
+mediaType: application/json
+
+/customers:
+  post:
+    displayName: Create Customer Profile
+    description: Persists customer demographic details and passport information into core CRM database.
+    body:
+      application/json:
+        properties:
+          givenName: string
+          familyName: string
+          passportNumber: string
+          nationality: string
+          countryOfResidence: string
+          birthDate: date-only
+          email: string
+        example:
+          givenName: "Amelie"
+          familyName: "Müller"
+          passportNumber: "X1234567"
+          nationality: "CHE"
+          countryOfResidence: "CHE"
+          birthDate: "2002-05-14"
+          email: "amelie.muller@example.ch"
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              customerId: "CUST-DB-99812"
+              status: "ACTIVE"
+              createdAt: "2026-08-04T10:00:00Z"
+      409:
+        description: Duplicate passport entry detected in database
+        body:
+          application/json:
+            example:
+              code: "ERR_DUPLICATE_PASSPORT"
+              reason: "A customer record with passport X1234567 already exists in LMT database."
+
+/billing-accounts:
+  post:
+    displayName: Create Billing Account
+    description: Creates a billing account linked to customer ID with card payment setup.
+    body:
+      application/json:
+        properties:
+          customerId: string
+          accountType: string
+          paymentMethod: string
+        example:
+          customerId: "CUST-DB-99812"
+          accountType: "B2C_NonResident"
+          paymentMethod: "CreditCard"
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              billingAccountId: "BAC-DB-99812"
+              customerId: "CUST-DB-99812"
+              status: "ACTIVE"

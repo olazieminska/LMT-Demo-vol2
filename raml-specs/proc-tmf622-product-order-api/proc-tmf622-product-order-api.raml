@@ -1,0 +1,202 @@
+#%RAML 1.0
+title: TMF622 Product Ordering Management Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/productOrderingManagement/v4
+mediaType: application/json
+
+types:
+  ErrorResponse:
+    type: object
+    properties:
+      code: string
+      reason: string
+      message: string
+
+/productOrder:
+  post:
+    displayName: Place Product Order (eSIM + Switzerland Connect Plan)
+    description: |
+      Main orchestration engine.
+      1) order-management-sapi POST /orders
+      2) external-partners-sapi POST /payments/charges
+      3) on decline -> PATCH /orders/{id}/status FAILED_PAYMENT and return 402
+      4) fulfillment-notification-sapi POST /esim/provision
+      5) fulfillment-notification-sapi POST /notifications/send
+      6) order-management-sapi PATCH /orders/{id}/status COMPLETED
+    body:
+      application/json:
+        type: object
+        properties:
+          description:
+            type: string
+            required: false
+          relatedParty:
+            type: object
+            required: true
+            properties:
+              id:
+                type: string
+                required: true
+                description: customerId from TMF632
+              billingAccountId:
+                type: string
+                required: true
+                description: billingAccountId from TMF666
+              privacyProfileId:
+                type: string
+                required: true
+                description: privacyProfileId from TMF680 — consent gate
+          orderItem:
+            type: array
+            required: true
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  required: true
+                action:
+                  type: string
+                  required: true
+                  enum: [add]
+                productOffering:
+                  type: object
+                  required: true
+                  properties:
+                    id:
+                      type: string
+                      required: true
+          payment:
+            type: object
+            required: true
+            properties:
+              cardToken:
+                type: string
+                required: true
+                description: Tokenised card reference from payment provider
+              amount:
+                type: number
+                required: true
+              currency:
+                type: string
+                required: true
+          notification:
+            type: object
+            required: false
+            properties:
+              channel:
+                type: string
+                enum: [Email, SMS]
+              recipient:
+                type: string
+        example:
+          description: "Switzerland Connect Plan - eSIM order for Amelie"
+          relatedParty:
+            id: "CUST-DB-99812"
+            billingAccountId: "BAC-DB-99812"
+            privacyProfileId: "PRIV-LMT-99812"
+          orderItem:
+            - id: "1"
+              action: "add"
+              productOffering:
+                id: "OFFERING_SWISS_CONNECT"
+          payment:
+            cardToken: "tok_visa_4111111111111111"
+            amount: 19.99
+            currency: "EUR"
+          notification:
+            channel: "Email"
+            recipient: "amelie.muller@example.ch"
+    responses:
+      201:
+        description: Order completed — eSIM provisioned, notification sent
+        body:
+          application/json:
+            example:
+              id: "ORD-SYS-99812"
+              href: "/productOrderingManagement/v4/productOrder/ORD-SYS-99812"
+              state: "completed"
+              description: "Switzerland Connect Plan — eSIM order for Amelie"
+              orderDate: "2026-08-05T10:02:00Z"
+              completionDate: "2026-08-05T10:02:30Z"
+              relatedParty:
+                id: "CUST-DB-99812"
+                billingAccountId: "BAC-DB-99812"
+              payment:
+                transactionId: "TXN-GW-99201"
+                status: "SUCCESS"
+                amount: 19.99
+                currency: "EUR"
+                acquirerCode: "APPROVED"
+              orderItem:
+                - id: "1"
+                  state: "completed"
+                  productOffering:
+                    id: "OFFERING_SWISS_CONNECT"
+                    name: "Switzerland Connect Plan"
+                  product:
+                    id: "8937100000000012345"
+                    productSerialNumber: "8937100000000012345"
+                    place: "eSIM"
+              esim:
+                iccid: "8937100000000012345"
+                assignedMsisdn: "+37120001234"
+                smdpAddress: "smdp.lmt.lv"
+                activationCode: "LPA:1$smdp.lmt.lv$CONF-CODE-99812"
+                status: "RELEASED"
+              notification:
+                notificationId: "NOTIF-99102"
+                channel: "Email"
+                deliveryStatus: "DELIVERED"
+      400:
+        description: Consent gate — privacyProfileId missing or invalid
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              code: "400"
+              reason: CONSENT_REQUIRED
+              message: A valid privacyProfileId must be provided. Order cannot proceed without consent record.
+      402:
+        description: Payment declined — order halted, not fulfilled
+        body:
+          application/json:
+            example:
+              id: ORD-SYS-99812
+              href: /productOrderingManagement/v4/productOrder/ORD-SYS-99812
+              state: FAILED_PAYMENT
+              payment:
+                transactionId: TXN-GW-99202
+                status: DECLINED
+                acquirerCode: INSUFFICIENT_FUNDS
+              error:
+                code: "402"
+                reason: PAYMENT_DECLINED
+                message: Card charge failed. Order has been cancelled and will not proceed to fulfilment.
+
+  /{productOrderId}:
+    get:
+      displayName: Retrieve Product Order
+      description: Returns the current state of a product order including payment outcome, eSIM details and notification status.
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                id: "ORD-SYS-99812"
+                href: "/productOrderingManagement/v4/productOrder/ORD-SYS-99812"
+                state: "completed"
+                relatedParty:
+                  id: "CUST-DB-99812"
+                payment:
+                  transactionId: "TXN-GW-99201"
+                  status: "SUCCESS"
+                esim:
+                  iccid: "8937100000000012345"
+                  assignedMsisdn: "+37120001234"
+                  activationCode: "LPA:1$smdp.lmt.lv$CONF-CODE-99812"
+                  status: "RELEASED"
+        404:
+          body:
+            application/json:
+              type: ErrorResponse

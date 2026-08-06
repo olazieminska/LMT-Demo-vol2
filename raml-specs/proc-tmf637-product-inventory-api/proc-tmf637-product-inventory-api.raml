@@ -1,0 +1,86 @@
+#%RAML 1.0
+title: TMF637 Product Inventory Management Process API
+version: v4
+baseUri: https://api.lmt.lv/papi/productInventoryManagement/v4
+mediaType: application/json
+
+types:
+  ErrorResponse:
+    type: object
+    properties:
+      code: string
+      reason: string
+      message: string
+
+/product:
+  get:
+    displayName: Get Product Inventory (Self-Care View)
+    description: |
+      Returns active subscription inventory scoped to customerId.
+      Response is built from process inventory projection populated by TMF622
+      and enriched with product-catalog-sapi offering details.
+    queryParameters:
+      customerId:
+        type: string
+        required: true
+        description: The customerId of the requesting customer. Must match authenticated session.
+        example: CUST-DB-99812
+    responses:
+      200:
+        description: Active product inventory returned for the customer
+        body:
+          application/json:
+            example:
+              - id: "PROD-INV-99812"
+                href: "/productInventoryManagement/v4/product/PROD-INV-99812"
+                status: "active"
+                name: "Switzerland Connect Plan"
+                startDate: "2026-08-05T10:02:30Z"
+                relatedParty:
+                  - id: "CUST-DB-99812"
+                    role: "customer"
+                billingAccount:
+                  id: "BAC-DB-99812"
+                  paymentMethod: "CreditCard"
+                productOffering:
+                  id: "OFFERING_SWISS_CONNECT"
+                  name: "Switzerland Connect Plan"
+                productSerialNumber: "8937100000000012345"
+                realizingService:
+                  - id: "SVC-ESIM-99812"
+                    type: "eSIM"
+                    iccid: "8937100000000012345"
+                    msisdn: "+37120001234"
+                    smdpAddress: "smdp.lmt.lv"
+                    activationCode: "LPA:1$smdp.lmt.lv$CONF-CODE-99812"
+                    esimStatus: "RELEASED"
+                productCharacteristic:
+                  - name: "latviaData"
+                    value: "UNLIMITED"
+                  - name: "latviaVoiceSms"
+                    value: "UNLIMITED"
+                  - name: "switzerlandVoiceMins"
+                    value: "60"
+                price:
+                  amount: 19.99
+                  currency: "EUR"
+                  billingPeriod: "Monthly"
+      400:
+        description: Missing mandatory customerId query parameter
+        body:
+          application/json:
+            type: ErrorResponse
+      403:
+        description: Data isolation violation — requested customerId does not match session
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              code: "403"
+              reason: ACCESS_DENIED
+              message: You are not authorised to view account information for this customer.
+      404:
+        description: No active products found for this customer
+        body:
+          application/json:
+            type: ErrorResponse

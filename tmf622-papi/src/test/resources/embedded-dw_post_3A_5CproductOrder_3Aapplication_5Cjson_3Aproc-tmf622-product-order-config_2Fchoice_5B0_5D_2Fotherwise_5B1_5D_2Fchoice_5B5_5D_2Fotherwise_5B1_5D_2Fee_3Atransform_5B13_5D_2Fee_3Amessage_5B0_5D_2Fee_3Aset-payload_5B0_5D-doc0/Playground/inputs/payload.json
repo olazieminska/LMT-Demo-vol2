@@ -1,0 +1,26 @@
+{
+  "notification": {
+    "channel": "molestie",
+    "recipient": "nibh"
+  },
+  "orderItem": [
+    {
+      "productOffering": {
+        "id": "elit"
+      },
+      "action": "Nam",
+      "id": "nibh"
+    }
+  ],
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor erat erat sed mi. Aliquam",
+  "payment": {
+    "amount": 24,
+    "currency": "erat",
+    "cardToken": "risus"
+  },
+  "relatedParty": {
+    "privacyProfileId": "sed",
+    "billingAccountId": "ut",
+    "id": "pulvinar"
+  }
+}
