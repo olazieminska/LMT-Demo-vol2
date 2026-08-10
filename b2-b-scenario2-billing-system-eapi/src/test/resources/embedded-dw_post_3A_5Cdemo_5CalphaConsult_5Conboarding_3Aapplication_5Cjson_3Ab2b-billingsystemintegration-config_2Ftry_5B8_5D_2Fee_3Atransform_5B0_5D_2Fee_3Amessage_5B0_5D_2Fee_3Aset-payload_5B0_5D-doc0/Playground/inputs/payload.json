@@ -1,18 +1,24 @@
 {
-  "deviceOrderId": "a",
-  "firstBillingCycleDate": "viverra",
-  "customerId": "sit",
-  "bundleName": "adipiscing",
-  "orchestrationStatus": "a",
-  "billingAccountId": "venenatis",
-  "integrationTrace": {
-    "tmf620": "tempor",
-    "tmf641": "felis",
-    "tmf666": "a",
-    "tmf622": "convallis"
+  "bundleItems": [
+    {
+      "productOfferingId": "ac",
+      "itemType": "nibh",
+      "quantity": 24,
+      "termMonths": 94,
+      "billingLevel": "arcu",
+      "productOfferingName": "Nam"
+    }
+  ],
+  "bundleName": "erat",
+  "billingPreferences": {
+    "billingCycle": "molestie",
+    "paymentMethod": "tempor"
   },
-  "scenarioId": "faucibus",
-  "serviceOrderState": "a",
-  "customerName": "Nunc",
-  "serviceOrderId": "Nunc"
+  "scenarioId": "sit",
+  "customer": {
+    "customerId": "convallis",
+    "industry": "Fusce",
+    "employeeCount": 37,
+    "customerName": "eget"
+  }
 }

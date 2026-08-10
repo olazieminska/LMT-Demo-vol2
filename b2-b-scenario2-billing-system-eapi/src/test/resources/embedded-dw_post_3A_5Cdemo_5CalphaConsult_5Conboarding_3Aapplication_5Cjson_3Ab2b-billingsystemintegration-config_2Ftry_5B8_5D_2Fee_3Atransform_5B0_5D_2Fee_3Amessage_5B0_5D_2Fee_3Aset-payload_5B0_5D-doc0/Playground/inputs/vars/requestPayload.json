@@ -1,0 +1,24 @@
+{
+  "bundleItems": [
+    {
+      "productOfferingId": "lorem",
+      "itemType": "eros",
+      "quantity": 19,
+      "termMonths": 50,
+      "billingLevel": "libero",
+      "productOfferingName": "eget"
+    }
+  ],
+  "bundleName": "Nam",
+  "billingPreferences": {
+    "billingCycle": "nibh",
+    "paymentMethod": "tempor"
+  },
+  "scenarioId": "nunc",
+  "customer": {
+    "customerId": "ipsum",
+    "industry": "felis",
+    "employeeCount": 12,
+    "customerName": "justo"
+  }
+}
