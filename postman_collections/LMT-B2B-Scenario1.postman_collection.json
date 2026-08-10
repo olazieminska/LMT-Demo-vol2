@@ -122,7 +122,64 @@
       "response": []
     },
     {
-      "name": "Step3-Patch-Organization-TMF632",
+      "name": "Step3-Get-Party-TMF632",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://b2b-legalentity-tmf632-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/organization/1002",
+          "protocol": "https",
+          "host": [
+            "b2b-legalentity-tmf632-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "organization",
+            "1002"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step4-Patch-Party-TMF632",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"@type\": \"Organization\",\n    \"@baseType\": \"Party\",\n    \"name\": \"Demo Manufacturing SIA Updated\",\n    \"partyCharacteristic\": [\n      {\n        \"@type\": \"StringCharacteristic\",\n        \"name\": \"externalRefreshBatch\",\n        \"valueType\": \"string\",\n        \"value\": \"job-2026-08-06\"\n      }\n    ]\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-legalentity-tmf632-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/organization/1002",
+          "protocol": "https",
+          "host": [
+            "b2b-legalentity-tmf632-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "organization",
+            "1002"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step4(optional)-Patch-Organization-TMF632",
       "request": {
         "method": "PATCH",
         "header": [
@@ -168,7 +225,7 @@
       "response": []
     },
     {
-      "name": "Step4-Get-Organization-TMF632",
+      "name": "Step5-Get-Organization-TMF632",
       "request": {
         "method": "GET",
         "header": [
