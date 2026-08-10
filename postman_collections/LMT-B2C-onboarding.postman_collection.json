@@ -1,0 +1,920 @@
+{
+  "info": {
+    "_postman_id": "c04e811c-69e3-4c6f-b2f9-4993701dc796",
+    "name": "LMT-B2C-onboarding",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34073391"
+  },
+  "item": [
+    {
+      "name": "Fulfillment-esim-provision",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"customerId\": \"CUST-DB-99812\",\n    \"offeringId\": \"OFFERING_SWISS_CONNECT\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://fullfilment-notification-sapi-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/esim/provision",
+          "protocol": "https",
+          "host": [
+            "fullfilment-notification-sapi-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "esim",
+            "provision"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Fulfillment-notification",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"channel\": \"SMS\",\n    \"recipient\": \"+37120001234\",\n    \"templateId\": \"ESIM_ACTIVATION_TEMP\",\n    \"activationCode\": \"LPA:1$smdp.lmt.lv$CONF-CODE-99812\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://fullfilment-notification-sapi-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/notifications/send",
+          "protocol": "https",
+          "host": [
+            "fullfilment-notification-sapi-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "notifications",
+            "send"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Product-offering",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://product-catalog-sapi-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/offerings/OFFERING_SWISS_CONNECT",
+          "protocol": "https",
+          "host": [
+            "product-catalog-sapi-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "offerings",
+            "OFFERING_SWISS_CONNECT"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Order-POST",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"customerId\": \"CUST-DB-99812\",\n    \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n    \"amount\": 19.99,\n    \"currency\": \"EUR\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://order-sapi-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/orders",
+          "protocol": "https",
+          "host": [
+            "order-sapi-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Order-PATCH",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"status\": \"COMPLETED\",\n    \"reason\": \"Payment verified and eSIM provisioned.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://order-sapi-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/orders/ORD-SYS-99812/status",
+          "protocol": "https",
+          "host": [
+            "order-sapi-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "ORD-SYS-99812",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "External-Partners-KYC",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"passportNumber\": \"X1234567\",\n    \"issuingCountry\": \"CHE\",\n    \"givenName\": \"Amelie\",\n    \"familyName\": \"Muller\",\n    \"birthDate\": \"2002-05-14\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://external-partners-sapi-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/kyc/verify-passport",
+          "protocol": "https",
+          "host": [
+            "external-partners-sapi-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "kyc",
+            "verify-passport"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "External-Partmers-payments",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"amount\":19.99,\"currency\":\"EUR\",\"billingAccountId\":\"BAC-DB-99812\",\"cardToken\":\"tok_visa_4111111111111111\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://external-partners-sapi-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/payments/charges",
+          "protocol": "https",
+          "host": [
+            "external-partners-sapi-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "charges"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Customer-Billing-Accounts",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"customerId\": \"CUST-DB-99812\",\n    \"accountType\": \"B2C_NonResident\",\n    \"paymentMethod\": \"CreditCard\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://customer-api-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/billing-accounts",
+          "protocol": "https",
+          "host": [
+            "customer-api-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billing-accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Customer-Create-ok",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"givenName\": \"Amelie\",\n    \"familyName\": \"Muller\",\n    \"passportNumber\": \"X1234567\",\n    \"nationality\": \"CHE\",\n    \"countryOfResidence\": \"CHE\",\n    \"birthDate\": \"2002-05-14\",\n    \"email\": \"amelie.muller@example.ch\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://customer-api-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/customers",
+          "protocol": "https",
+          "host": [
+            "customer-api-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "customers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Customer-Create-Duplicate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-mock-duplicate",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"givenName\":\"Amelie\",\"familyName\":\"Muller\",\"passportNumber\":\"X1234567\",\"nationality\":\"CHE\",\"countryOfResidence\":\"CHE\",\"birthDate\":\"2002-05-14\",\"email\":\"amelie.muller@example.ch\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://customer-api-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/customers",
+          "protocol": "https",
+          "host": [
+            "customer-api-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "customers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Customer-Billing-Accounts-422-Error",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-mock-billing-failure",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"customerId\": \"CUST-DB-99812\",\n    \"accountType\": \"B2C_NonResident\",\n    \"paymentMethod\": \"CreditCard\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://customer-api-dronst.5sc6y6-1.usa-e2.cloudhub.io/api/billing-accounts",
+          "protocol": "https",
+          "host": [
+            "customer-api-dronst",
+            "5sc6y6-1",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billing-accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TMF622-productOrder",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"description\": \"Switzerland Connect Plan - eSIM order for Amelie\",\n    \"relatedParty\": {\n      \"id\": \"CUST-DB-99812\",\n      \"billingAccountId\": \"BAC-DB-99812\",\n      \"privacyProfileId\": \"PRIV-LMT-99812\"\n    },\n    \"orderItem\": [\n      {\n        \"id\": \"1\",\n        \"action\": \"add\",\n        \"productOffering\": { \"id\": \"OFFERING_SWISS_CONNECT\" }\n      }\n    ],\n    \"payment\": {\n      \"cardToken\": \"tok_visa_4111111111111111\",\n      \"amount\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"notification\": {\n      \"channel\": \"Email\",\n      \"recipient\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tmf622-papi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder",
+          "protocol": "https",
+          "host": [
+            "tmf622-papi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TMF622-productOrder-402",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"relatedParty\": {\n      \"id\": \"CUST-DB-99812\",\n      \"billingAccountId\": \"BAC-DB-99812\",\n      \"privacyProfileId\": \"PRIV-LMT-99812\"\n    },\n    \"orderItem\": [\n      {\n        \"id\": \"1\",\n        \"action\": \"add\",\n        \"productOffering\": { \"id\": \"OFFERING_SWISS_CONNECT\" }\n      }\n    ],\n    \"payment\": {\n      \"cardToken\": \"tok_declined_4000000000000002\",\n      \"amount\": 19.99,\n      \"currency\": \"EUR\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tmf622-papi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder",
+          "protocol": "https",
+          "host": [
+            "tmf622-papi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TMF-632-201",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"givenName\": \"Amelie\",\n    \"familyName\": \"Muller\",\n    \"passportNumber\": \"X1234567\",\n    \"issuingCountry\": \"CHE\",\n    \"nationality\": \"CHE\",\n    \"countryOfResidence\": \"CHE\",\n    \"birthDate\": \"2002-05-14\",\n    \"contactMedium\": {\n      \"emailAddress\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tmf632-papi-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/individual",
+          "protocol": "https",
+          "host": [
+            "tmf632-papi-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "individual"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TMF-632-DuppPass-409",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"givenName\": \"Amelie\",\n    \"familyName\": \"Muller\",\n    \"passportNumber\": \"X9999999\",\n    \"issuingCountry\": \"CHE\",\n    \"nationality\": \"CHE\",\n    \"countryOfResidence\": \"CHE\",\n    \"birthDate\": \"2002-05-14\",\n    \"contactMedium\": {\n      \"emailAddress\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tmf632-papi-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/individual",
+          "protocol": "https",
+          "host": [
+            "tmf632-papi-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "individual"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TMF-632-KYC-400",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"givenName\": \"Amelie\",\n    \"familyName\": \"Muller\",\n    \"passportNumber\": \"KYC-FAIL-0001\",\n    \"issuingCountry\": \"CHE\",\n    \"nationality\": \"CHE\",\n    \"countryOfResidence\": \"CHE\",\n    \"birthDate\": \"2002-05-14\",\n    \"contactMedium\": {\n      \"emailAddress\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tmf632-papi-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/individual",
+          "protocol": "https",
+          "host": [
+            "tmf632-papi-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "individual"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TMF-632-Get",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://tmf632-papi-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/individual/CUST-DB-99812",
+          "protocol": "https",
+          "host": [
+            "tmf632-papi-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "individual",
+            "CUST-DB-99812"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TMF-632-NoID-404",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://tmf632-papi-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/individual/NO-SUCH-ID-99999",
+          "protocol": "https",
+          "host": [
+            "tmf632-papi-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "individual",
+            "NO-SUCH-ID-99999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": {\n      \"givenName\": \"Amelie\",\n      \"familyName\": \"Muller\",\n      \"passportNumber\": \"X1234567\",\n      \"issuingCountry\": \"CHE\",\n      \"nationality\": \"CHE\",\n      \"countryOfResidence\": \"CHE\",\n      \"birthDate\": \"2002-05-14\",\n      \"email\": \"amelie.muller@example.ch\"\n    },\n    \"selectedOffer\": {\n      \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n      \"expectedPrice\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"consent\": {\n      \"agreedToTerms\": true,\n      \"privacyAccepted\": true,\n      \"privacyProfileId\": \"PRIV-LMT-99812\"\n    },\n    \"payment\": {\n      \"cardToken\": \"tok_visa_4111111111111111\",\n      \"amount\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"notification\": {\n      \"channel\": \"Email\",\n      \"recipient\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-duppPass-409",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": {\n      \"givenName\": \"Amelie\",\n      \"familyName\": \"Muller\",\n      \"passportNumber\": \"X9999999\",\n      \"issuingCountry\": \"CHE\",\n      \"nationality\": \"CHE\",\n      \"countryOfResidence\": \"CHE\",\n      \"birthDate\": \"2002-05-14\",\n      \"email\": \"amelie.muller@example.ch\"\n    },\n    \"selectedOffer\": {\n      \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n      \"expectedPrice\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"consent\": {\n      \"agreedToTerms\": true,\n      \"privacyAccepted\": true,\n      \"privacyProfileId\": \"PRIV-LMT-99812\"\n    },\n    \"payment\": {\n      \"cardToken\": \"tok_visa_4111111111111111\",\n      \"amount\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"notification\": {\n      \"channel\": \"Email\",\n      \"recipient\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-KYC-fail-400",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": {\n      \"givenName\": \"Amelie\",\n      \"familyName\": \"Muller\",\n      \"passportNumber\": \"KYC-FAIL-0001\",\n      \"issuingCountry\": \"CHE\",\n      \"nationality\": \"CHE\",\n      \"countryOfResidence\": \"CHE\",\n      \"birthDate\": \"2002-05-14\",\n      \"email\": \"amelie.muller@example.ch\"\n    },\n    \"selectedOffer\": {\n      \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n      \"expectedPrice\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"consent\": {\n      \"agreedToTerms\": true,\n      \"privacyAccepted\": true,\n      \"privacyProfileId\": \"PRIV-LMT-99812\"\n    },\n    \"payment\": {\n      \"cardToken\": \"tok_visa_4111111111111111\",\n      \"amount\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"notification\": {\n      \"channel\": \"Email\",\n      \"recipient\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-NO-TERMS-400",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": {\n      \"givenName\": \"Amelie\",\n      \"familyName\": \"Muller\",\n      \"passportNumber\": \"X1234567\",\n      \"issuingCountry\": \"CHE\",\n      \"nationality\": \"CHE\",\n      \"countryOfResidence\": \"CHE\",\n      \"birthDate\": \"2002-05-14\",\n      \"email\": \"amelie.muller@example.ch\"\n    },\n    \"selectedOffer\": {\n      \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n      \"expectedPrice\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"consent\": {\n      \"agreedToTerms\": false,\n      \"privacyAccepted\": false\n    },\n    \"payment\": {\n      \"cardToken\": \"tok_visa_4111111111111111\",\n      \"amount\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"notification\": {\n      \"channel\": \"Email\",\n      \"recipient\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-pay-decline-402",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": {\n      \"givenName\": \"Amelie\",\n      \"familyName\": \"Muller\",\n      \"passportNumber\": \"X1234567\",\n      \"issuingCountry\": \"CHE\",\n      \"nationality\": \"CHE\",\n      \"countryOfResidence\": \"CHE\",\n      \"birthDate\": \"2002-05-14\",\n      \"email\": \"amelie.muller@example.ch\"\n    },\n    \"selectedOffer\": {\n      \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n      \"expectedPrice\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"consent\": {\n      \"agreedToTerms\": true,\n      \"privacyAccepted\": true,\n      \"privacyProfileId\": \"PRIV-LMT-99812\"\n    },\n    \"payment\": {\n      \"cardToken\": \"tok_declined_4111111111111111\",\n      \"amount\": 19.99,\n      \"currency\": \"EUR\"\n    },\n    \"notification\": {\n      \"channel\": \"Email\",\n      \"recipient\": \"amelie.muller@example.ch\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-pay-INVALID-INPUT-400",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": { \"givenName\": \"Amelie\" }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-eligibility-OK",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": {\n      \"givenName\": \"Amelie\",\n      \"familyName\": \"Muller\",\n      \"passportNumber\": \"X1234567\",\n      \"issuingCountry\": \"CHE\",\n      \"nationality\": \"CHE\",\n      \"countryOfResidence\": \"CHE\",\n      \"birthDate\": \"2002-05-14\",\n      \"email\": \"amelie.muller@example.ch\"\n    },\n    \"selectedOffer\": {\n      \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n      \"expectedPrice\": 19.99,\n      \"currency\": \"EUR\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding/eligibility",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding",
+            "eligibility"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-eligibility-INVALID-400",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identity\": {\n      \"givenName\": \"Amelie\",\n      \"familyName\": \"Muller\",\n      \"passportNumber\": \"X1234567\",\n      \"issuingCountry\": \"CHE\",\n      \"nationality\": \"CHE\",\n      \"countryOfResidence\": \"CHE\",\n      \"birthDate\": \"14-05-2002\",\n      \"email\": \"amelie.muller@example.ch\"\n    },\n    \"selectedOffer\": {\n      \"offeringId\": \"OFFERING_SWISS_CONNECT\",\n      \"expectedPrice\": 19.99,\n      \"currency\": \"EUR\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "self-care-onboarding-eapi-joruney-OK",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://self-care-onboarding-eapi-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/selfcare/v1/onboarding/JRNY-20260805-0001",
+          "protocol": "https",
+          "host": [
+            "self-care-onboarding-eapi-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "selfcare",
+            "v1",
+            "onboarding",
+            "JRNY-20260805-0001"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

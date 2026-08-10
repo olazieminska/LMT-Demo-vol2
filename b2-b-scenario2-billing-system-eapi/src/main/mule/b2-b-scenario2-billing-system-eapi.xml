@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="b2b-billingsystemintegration-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <http:request-config name="tmf666-httpRequestConfig" basePath="/api">
+        <http:request-connection protocol="HTTPS" host="b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io" port="443" />
+    </http:request-config>
+    <http:request-config name="tmf620-httpRequestConfig" basePath="/api">
+        <http:request-connection protocol="HTTPS" host="b2b-billing-tmf620-dronst.5sc6y6-4.usa-e2.cloudhub.io" port="443" />
+    </http:request-config>
+    <http:request-config name="tmf641-httpRequestConfig" basePath="/api">
+        <http:request-connection protocol="HTTPS" host="b2b-641-serviceorder-dronst.5sc6y6-3.usa-e2.cloudhub.io" port="443" />
+    </http:request-config>
+    <http:request-config name="tmf622-httpRequestConfig" basePath="/api">
+        <http:request-connection protocol="HTTPS" host="b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io" port="443" />
+    </http:request-config>
+    <apikit:config name="b2b-billingsystemintegration-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:b2b-billingsystemintegration:1.0.0:raml:zip:b2b-billingsystemintegration.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="b2b-billingsystemintegration-main">
+        <http:listener config-ref="b2b-billingsystemintegration-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="b2b-billingsystemintegration-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="b2b-billingsystemintegration-console">
+        <http:listener config-ref="b2b-billingsystemintegration-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="b2b-billingsystemintegration-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\demo\alphaConsult\pricing:b2b-billingsystemintegration-config">
+        <set-variable value="UNKNOWN" doc:name="Init TMF620 Status" variableName="tmf620Status" />
+        <try doc:name="Call TMF620 Product Offering">
+            <http:request method="GET" doc:name="GET /productOffering" config-ref="tmf620-httpRequestConfig" path="/productOffering" target="tmf620Call"/>
+            <set-variable value="#['HTTP ' ++ ((attributes.statusCode default 200) as String)]" doc:name="TMF620 Status OK" variableName="tmf620Status" />
+            <error-handler>
+                <on-error-continue doc:name="Continue on TMF620 Error">
+                    <set-variable value="ERROR" doc:name="TMF620 Status Error" variableName="tmf620Status" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  productOfferingId: "PO-MCB-001",
+  productOfferingName: "Managed Connectivity Bundle",
+  recurringFee: 149.99,
+  oneTimeCharge: 299,
+  discounts: [
+    {
+      name: "B2B Welcome Discount",
+      amount: 20
+    }
+  ],
+  integrationTrace: {
+    tmf620: vars.tmf620Status
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\health:b2b-billingsystemintegration-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "UP"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\demo\alphaConsult\onboarding:application\json:b2b-billingsystemintegration-config">
+        <set-variable value="#[payload]" doc:name="Store Request Payload" variableName="requestPayload" />
+        <set-variable value="UNKNOWN" doc:name="Init TMF666 Status" variableName="tmf666Status" />
+        <set-variable value="UNKNOWN" doc:name="Init TMF620 Status" variableName="tmf620Status" />
+        <set-variable value="UNKNOWN" doc:name="Init TMF641 Status" variableName="tmf641Status" />
+        <set-variable value="UNKNOWN" doc:name="Init TMF622 Status" variableName="tmf622Status" />
+        <set-variable value="BAC-ALPHA-0001" doc:name="Default Billing Account ID" variableName="billingAccountId" />
+        <set-variable value="SO-SVC-ALPHA-0001" doc:name="Default Service Order ID" variableName="serviceOrderId" />
+        <set-variable value="acknowledged" doc:name="Default Service Order State" variableName="serviceOrderState" />
+
+        <try doc:name="Call TMF666 Create Billing Account">
+            <ee:transform doc:name="Build TMF666 Request">
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillingAccount",
+  name: (vars.requestPayload.customer.customerName default "AlphaConsult SIA") ++ " Billing Account",
+  description: "B2B demo billing account",
+  accountType: "Business",
+  ratingType: "postpaid",
+  currencyCode: "EUR",
+  state: "Active",
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    id: "PM-BANK-001",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/PM-BANK-001",
+    name: vars.requestPayload.billingPreferences.paymentMethod default "Bank Transfer"
+  },
+  billingCycleSpecification: {
+    "@type": "BillingCycleSpecification",
+    id: "BCS-MONTHLY-01",
+    href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/BCS-MONTHLY-01",
+    name: "Monthly billing",
+    frequency: "monthly",
+    dateShift: 0
+  },
+  relatedParty: [
+    {
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      role: "billReceiver",
+      "@referredType": "Organization",
+      id: vars.requestPayload.customer.customerId default "ORG-ALPHA-001",
+      href: "https://host:port/tmf-api/partyManagement/v5/organization/" ++ (vars.requestPayload.customer.customerId default "ORG-ALPHA-001"),
+      name: vars.requestPayload.customer.customerName default "AlphaConsult SIA"
+    }
+  ]
+}]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+            <http:request method="POST" doc:name="POST /billingAccount" config-ref="tmf666-httpRequestConfig" path="/billingAccount" target="tmf666Call"/>
+            <set-variable value="#['HTTP ' ++ ((attributes.statusCode default 200) as String)]" doc:name="TMF666 Status OK" variableName="tmf666Status" />
+            <set-variable value="#[if (vars.tmf666Call is Object and vars.tmf666Call.body is Object and vars.tmf666Call.body.id?) vars.tmf666Call.body.id else vars.billingAccountId]" doc:name="Capture Billing Account ID" variableName="billingAccountId" />
+            <error-handler>
+                <on-error-continue doc:name="Continue on TMF666 Error">
+                    <set-variable value="ERROR" doc:name="TMF666 Status Error" variableName="tmf666Status" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+
+        <try doc:name="Call TMF620 Get Product Offering">
+            <http:request method="GET" doc:name="GET /productOffering" config-ref="tmf620-httpRequestConfig" path="/productOffering" target="tmf620Call"/>
+            <set-variable value="#['HTTP ' ++ ((attributes.statusCode default 200) as String)]" doc:name="TMF620 Status OK" variableName="tmf620Status" />
+            <error-handler>
+                <on-error-continue doc:name="Continue on TMF620 Error">
+                    <set-variable value="ERROR" doc:name="TMF620 Status Error" variableName="tmf620Status" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+
+        <try doc:name="Call TMF641 Create Service Order">
+            <ee:transform doc:name="Build TMF641 Request">
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  externalId: vars.requestPayload.scenarioId default "B2B-API-010-ALPHA",
+  category: vars.requestPayload.bundleName default "Managed Connectivity + DaaS",
+  description: "Managed Connectivity + DaaS activation",
+  requestedStartDate: now() as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"},
+  requestedCompletionDate: (now() + |P2D|) as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"},
+  relatedParty: [
+    {
+      id: vars.requestPayload.customer.customerId default "ORG-ALPHA-001",
+      name: vars.requestPayload.customer.customerName default "AlphaConsult SIA",
+      role: "customer",
+      "@referredType": "Organization"
+    }
+  ],
+  serviceOrderItem: [
+    {
+      id: "1",
+      action: "add",
+      state: "acknowledged",
+      service: {
+        name: "Unlimited Mobile Voice & Data - Employee Lines",
+        "@type": "Service"
+      }
+    },
+    {
+      id: "2",
+      action: "add",
+      state: "acknowledged",
+      service: {
+        name: "FWA Business Internet - Site Connectivity",
+        "@type": "Service"
+      }
+    },
+    {
+      id: "3",
+      action: "add",
+      state: "acknowledged",
+      service: {
+        name: "Laptop Device-as-a-Service - 36 months",
+        "@type": "Service"
+      }
+    }
+  ]
+}]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+            <http:request method="POST" doc:name="POST /serviceOrder" config-ref="tmf641-httpRequestConfig" path="/serviceOrder" target="tmf641Call"/>
+            <set-variable value="#['HTTP ' ++ ((attributes.statusCode default 200) as String)]" doc:name="TMF641 Status OK" variableName="tmf641Status" />
+            <set-variable value="#[if (vars.tmf641Call is Object and vars.tmf641Call.body is Object and vars.tmf641Call.body.id?) vars.tmf641Call.body.id else vars.serviceOrderId]" doc:name="Capture Service Order ID" variableName="serviceOrderId" />
+            <set-variable value="#[if (vars.tmf641Call is Object and vars.tmf641Call.body is Object and vars.tmf641Call.body.state?) vars.tmf641Call.body.state else vars.serviceOrderState]" doc:name="Capture Service Order State" variableName="serviceOrderState" />
+            <error-handler>
+                <on-error-continue doc:name="Continue on TMF641 Error">
+                    <set-variable value="ERROR" doc:name="TMF641 Status Error" variableName="tmf641Status" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+
+        <try doc:name="Call TMF622 Product Order">
+            <http:request method="GET" doc:name="GET /productOrder" config-ref="tmf622-httpRequestConfig" path="/productOrder" target="tmf622Call"/>
+            <set-variable value="#['HTTP ' ++ ((attributes.statusCode default 200) as String)]" doc:name="TMF622 Status OK" variableName="tmf622Status" />
+            <error-handler>
+                <on-error-continue doc:name="Continue on TMF622 Error">
+                    <set-variable value="ERROR" doc:name="TMF622 Status Error" variableName="tmf622Status" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <set-variable value="201" doc:name="Set Created Status" variableName="httpStatus" />
+
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  scenarioId: vars.requestPayload.scenarioId default "B2B-API-010-ALPHA",
+  customerId: vars.requestPayload.customer.customerId default "CUST-ALPHA-001",
+  customerName: vars.requestPayload.customer.customerName default "AlphaConsult SIA",
+  bundleName: vars.requestPayload.bundleName default "Managed Connectivity + DaaS",
+  billingAccountId: vars.billingAccountId,
+  serviceOrderId: vars.serviceOrderId,
+  deviceOrderId: "SO-DEV-ALPHA-0002",
+  serviceOrderState: vars.serviceOrderState,
+  firstBillingCycleDate: "2026-09-01",
+  orchestrationStatus: "BILLING_UNIT_SCHEDULED",
+  integrationTrace: {
+    tmf666: vars.tmf666Status,
+    tmf620: vars.tmf620Status,
+    tmf641: vars.tmf641Status,
+    tmf622: vars.tmf622Status
+  },
+  integrationTraceSemantic: {
+    tmf666: if (vars.tmf666Status != "ERROR") "billing-account-created-or-retrieved" else "billing-account-call-failed",
+    tmf620: if (vars.tmf620Status != "ERROR") "pricing-retrieved" else "pricing-call-failed",
+    tmf641: if (vars.tmf641Status != "ERROR") "service-order-submitted" else "service-order-call-failed",
+    tmf622: if (vars.tmf622Status != "ERROR") "product-order-state-accessed" else "product-order-call-failed"
+  },
+  integrationOutcome: {
+    tmf666: if (vars.tmf666Status != "ERROR") "created" else "failed",
+    tmf620: if (vars.tmf620Status != "ERROR") "retrieved" else "failed",
+    tmf641: if (vars.tmf641Status != "ERROR") "submitted" else "failed",
+    tmf622: if (vars.tmf622Status != "ERROR") "retrieved" else "failed"
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>

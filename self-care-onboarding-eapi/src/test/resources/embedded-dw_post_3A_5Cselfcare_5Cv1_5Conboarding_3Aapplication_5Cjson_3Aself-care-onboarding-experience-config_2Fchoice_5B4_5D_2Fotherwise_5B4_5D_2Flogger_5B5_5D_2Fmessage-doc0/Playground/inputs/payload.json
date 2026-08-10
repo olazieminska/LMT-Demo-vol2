@@ -1,1 +1,32 @@
-{}
+{
+  "notification": {
+    "channel": "justo",
+    "recipient": "faucibus"
+  },
+  "identity": {
+    "passportNumber": "semper",
+    "nationality": "lectus",
+    "issuingCountry": "nunc",
+    "givenName": "Curt",
+    "familyName": "Davinet",
+    "countryOfResidence": "dolor",
+    "birthDate": "nunc",
+    "email": "Allyn.Davio@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 44,
+    "currency": "lorem",
+    "offeringId": "viverra"
+  },
+  "payment": {
+    "amount": 77,
+    "currency": "libero",
+    "cardToken": "lectus"
+  },
+  "consent": {
+    "privacyProfileId": "pretium",
+    "marketingConsent": true,
+    "privacyAccepted": false,
+    "agreedToTerms": true
+  }
+}

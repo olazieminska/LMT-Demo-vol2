@@ -1,0 +1,319 @@
+{
+  "info": {
+    "_postman_id": "54235e2e-9784-4b2d-818a-21827270dad4",
+    "name": "LMT-B2B-Scenario3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34073391"
+  },
+  "item": [
+    {
+      "name": "Step1-Webhook-TMF622",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"callback\":\"https://webhook.site/YOUR-ID\",\n    \"query\":\"eventType=ProductOrderStateChangeEvent\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/hub",
+          "protocol": "https",
+          "host": [
+            "b2b-warehouse-tmf622-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "hub"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step2-ProductOrder-TMF622",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"externalId\":\"EXT-ALPHA-001\",\n    \"description\":\"AlphaConsult DaaS laptop order\",\n    \"category\":\"enterprise\",\n    \"relatedParty\":[\n      {\"id\":\"ALPHACONSULT-SIA\",\"name\":\"AlphaConsult SIA\",\"role\":\"customer\"}\n    ],\n    \"billingAccount\":{\"id\":\"BAC-B2B-1001\",\"name\":\"AlphaConsult Billing\"},\n    \"productOrderItem\":[\n      {\n        \"id\":\"1\",\n        \"action\":\"add\",\n        \"quantity\":1,\n        \"productOffering\":{\"id\":\"OFFERING_DAAS_LAPTOP\",\"name\":\"DaaS Laptop 36M\"},\n        \"product\":{\"name\":\"DaaS Laptop Device\"}\n      }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder",
+          "protocol": "https",
+          "host": [
+            "b2b-warehouse-tmf622-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step3-ProductInventory-TMF637",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://b2b-inventory-tmf637-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productInventory?productOfferingId=OFFERING_DAAS_LAPTOP&locationId=RIGA_DC",
+          "protocol": "https",
+          "host": [
+            "b2b-inventory-tmf637-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productInventory"
+          ],
+          "query": [
+            {
+              "key": "productOfferingId",
+              "value": "OFFERING_DAAS_LAPTOP"
+            },
+            {
+              "key": "locationId",
+              "value": "RIGA_DC"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patch-inProgress-TMF622",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"state\":\"inProgress\",\n    \"productOrderItem\":[\n      {\n        \"id\":\"1\",\n        \"action\":\"add\",\n        \"quantity\":1,\n        \"productOffering\":{\"id\":\"OFFERING_DAAS_LAPTOP\",\"name\":\"DaaS Laptop 36M\"},\n        \"product\":{\"name\":\"DaaS Laptop Device\"}\n      }\n    ]\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder/:productOrderId",
+          "protocol": "https",
+          "host": [
+            "b2b-warehouse-tmf622-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder",
+            ":productOrderId"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            }
+          ],
+          "variable": [
+            {
+              "key": "productOrderId",
+              "value": "ORD-B2B-20260810084311"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post-inventory-shipped-TMF637",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"eventType\":\"shipped\",\n    \"orderId\":\"ORD-B2B-20260810084311\",\n    \"inventoryId\":\"INV-DAAS-001\",\n    \"trackingNumber\":\"TRK-10001\",\n    \"warehouseId\":\"RIGA_DC\",\n    \"eventTime\":\"2026-08-06T15:20:00Z\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-inventory-tmf637-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/logisticsEvent",
+          "protocol": "https",
+          "host": [
+            "b2b-inventory-tmf637-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "logisticsEvent"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post-inventory-delivered-TMF637",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"eventType\":\"delivered\",\n    \"orderId\":\"ORD-B2B-20260810084311\",\n    \"inventoryId\":\"INV-DAAS-001\",\n    \"trackingNumber\":\"TRK-10001\",\n    \"warehouseId\":\"RIGA_DC\",\n    \"eventTime\":\"2026-08-06T15:30:00Z\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-inventory-tmf637-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/logisticsEvent",
+          "protocol": "https",
+          "host": [
+            "b2b-inventory-tmf637-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "logisticsEvent"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patch-completed-TMF622",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"state\":\"completed\",\n    \"productOrderItem\":[\n      {\n        \"id\":\"1\",\n        \"action\":\"add\",\n        \"quantity\":1,\n        \"productOffering\":{\"id\":\"OFFERING_DAAS_LAPTOP\",\"name\":\"DaaS Laptop 36M\"},\n        \"product\":{\"name\":\"DaaS Laptop Device\"}\n      }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder/:productOrderId",
+          "protocol": "https",
+          "host": [
+            "b2b-warehouse-tmf622-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder",
+            ":productOrderId"
+          ],
+          "variable": [
+            {
+              "key": "productOrderId",
+              "value": "ORD-B2B-20260810084311"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post-inventory-returned-TMF637",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"eventType\":\"returned\",\n    \"orderId\":\"ORD-B2B-20260810084311\",\n    \"inventoryId\":\"INV-DAAS-001\",\n    \"trackingNumber\":\"TRK-10001\",\n    \"warehouseId\":\"RIGA_DC\",\n    \"reason\":\"damaged_device\",\n    \"eventTime\":\"2026-08-06T15:40:00Z\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-inventory-tmf637-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/logisticsEvent",
+          "protocol": "https",
+          "host": [
+            "b2b-inventory-tmf637-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "logisticsEvent"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetOrder-TMF622",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder/:productOrderId",
+          "protocol": "https",
+          "host": [
+            "b2b-warehouse-tmf622-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder",
+            ":productOrderId"
+          ],
+          "variable": [
+            {
+              "key": "productOrderId",
+              "value": "ORD-B2B-20260810084311"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

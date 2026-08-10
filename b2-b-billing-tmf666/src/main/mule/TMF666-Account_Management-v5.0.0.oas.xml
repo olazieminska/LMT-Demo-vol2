@@ -1,0 +1,3561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="TMF666-Account_Management-v5.0.0.oas-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="TMF666-Account_Management-v5.0.0.oas-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:tmf666-accountmanagement:5.0.0:oas:zip:TMF666-Account_Management-v5.0.0.oas.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="TMF666-Account_Management-v5.0.0.oas-main">
+        <http:listener config-ref="TMF666-Account_Management-v5.0.0.oas-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="TMF666-Account_Management-v5.0.0.oas-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="TMF666-Account_Management-v5.0.0.oas-console">
+        <http:listener config-ref="TMF666-Account_Management-v5.0.0.oas-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="TMF666-Account_Management-v5.0.0.oas-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="delete:\billFormat\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\billFormat\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\billPresentationMedia\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\billPresentationMedia\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\billingAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\billingAccount\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\billingCycleSpecification\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\billingCycleSpecification\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\financialAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\financialAccount\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\hub\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\hub\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\partyAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\partyAccount\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\settlementAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\settlementAccount\(id):TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="patch:\billFormat\(id):application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillFormat",
+  href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8718",
+  id: "8718",
+  name: "Detailed invoice"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billFormat\(id):application\json-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillFormat",
+  href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8718",
+  id: "8718",
+  name: "Detailed invoice"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billFormat\(id):application\json-patch-query+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillFormat",
+  href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8718",
+  id: "8718",
+  name: "Detailed invoice"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billFormat\(id):application\merge-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillFormat",
+  href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8718",
+  id: "8718",
+  name: "Detailed invoice"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billPresentationMedia\(id):application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillPresentationMedia",
+  href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/4506",
+  id: "4506",
+  name: "Electronic"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billPresentationMedia\(id):application\json-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillPresentationMedia",
+  href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/4506",
+  id: "4506",
+  name: "Electronic"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billPresentationMedia\(id):application\json-patch-query+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillPresentationMedia",
+  href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/4506",
+  id: "4506",
+  name: "Electronic"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billPresentationMedia\(id):application\merge-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillPresentationMedia",
+  href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/4506",
+  id: "4506",
+  name: "Electronic"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingAccount\(id):application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillingAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingAccount/5430",
+  id: "5430",
+  name: "Richard Cole Account",
+  relatedParty: [
+    {
+      role: "service provider",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        id: "6838",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/6838",
+        name: "Richard Cole"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingAccount\(id):application\json-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillingAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingAccount/5430",
+  id: "5430",
+  name: "Richard Cole Account",
+  relatedParty: [
+    {
+      role: "service provider",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        id: "6838",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/6838",
+        name: "Richard Cole"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingAccount\(id):application\json-patch-query+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillingAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingAccount/5430",
+  id: "5430",
+  name: "Richard Cole Account",
+  relatedParty: [
+    {
+      role: "service provider",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        id: "6838",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/6838",
+        name: "Richard Cole"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingAccount\(id):application\merge-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillingAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingAccount/5430",
+  id: "5430",
+  name: "Richard Cole Account",
+  relatedParty: [
+    {
+      role: "service provider",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        id: "6838",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/6838",
+        name: "Richard Cole"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingCycleSpecification\(id):application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillCycleSpecification",
+  billingDateShift: 20,
+  billingPeriod: "monthly",
+  chargeDateOffset: 10,
+  creditDateOffset: 15,
+  description: "This billing cycle specification describes the cycle for 20th of the month.",
+  frequency: "monthly",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/4556",
+  id: "4556",
+  mailingDateOffset: 30,
+  name: "Monthly billing",
+  paymentDueDateOffset: 30,
+  validFor: {
+    startDateTime: "2018-06-10T00:00:00.000Z",
+    endDateTime: "2025-01-10T00:00:00.000Z"
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingCycleSpecification\(id):application\json-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillCycleSpecification",
+  billingDateShift: 20,
+  billingPeriod: "monthly",
+  chargeDateOffset: 10,
+  creditDateOffset: 15,
+  description: "This billing cycle specification describes the cycle for 20th of the month.",
+  frequency: "monthly",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/4556",
+  id: "4556",
+  mailingDateOffset: 30,
+  name: "Monthly billing",
+  paymentDueDateOffset: 30,
+  validFor: {
+    startDateTime: "2018-06-10T00:00:00.000Z",
+    endDateTime: "2025-01-10T00:00:00.000Z"
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingCycleSpecification\(id):application\json-patch-query+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillCycleSpecification",
+  billingDateShift: 20,
+  billingPeriod: "monthly",
+  chargeDateOffset: 10,
+  creditDateOffset: 15,
+  description: "This billing cycle specification describes the cycle for 20th of the month.",
+  frequency: "monthly",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/4556",
+  id: "4556",
+  mailingDateOffset: 30,
+  name: "Monthly billing",
+  paymentDueDateOffset: 30,
+  validFor: {
+    startDateTime: "2018-06-10T00:00:00.000Z",
+    endDateTime: "2025-01-10T00:00:00.000Z"
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\billingCycleSpecification\(id):application\merge-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillCycleSpecification",
+  billingDateShift: 20,
+  billingPeriod: "monthly",
+  chargeDateOffset: 10,
+  creditDateOffset: 15,
+  description: "This billing cycle specification describes the cycle for 20th of the month.",
+  frequency: "monthly",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/4556",
+  id: "4556",
+  mailingDateOffset: 30,
+  name: "Monthly billing",
+  paymentDueDateOffset: 30,
+  validFor: {
+    startDateTime: "2018-06-10T00:00:00.000Z",
+    endDateTime: "2025-01-10T00:00:00.000Z"
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\financialAccount\(id):application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "FinancialAccount",
+  creditLimit: {
+    unit: "USD",
+    value: 3500
+  },
+  description: "This  financial account helps consolidate across all the branches.",
+  href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/1041",
+  id: "1041",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Consolidation Account",
+  state: "Active",
+  accountType: "Global",
+  relatedParty: [
+    {
+      role: "bill receiver",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@referredType": "Individual",
+        "@type": "PartyRefOrPartyRoleRef",
+        href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+        id: "2186",
+        name: "Gustave Flaubert"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "45678909876",
+      issuingJurisdiction: "Prefecture",
+      reason: "Social",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "9304357346341236",
+        href: "https://host:port/tmf-api/document/v5/attachment/9304357346341236",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-54321.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-54321.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Ludwig Borgia",
+      contactType: "secondary",
+      partyRoleType: "CustomerAccountRepresentative",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "EmailContactMedium",
+          preferred: false,
+          mediumType: "Email",
+          validFor: {
+            startDateTime: "2018-06-12T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          emailAddress: "alain.delon@best-actor.fr"
+        }
+      ],
+      relatedParty: {
+        role: "employee",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 50.58
+      },
+      balanceType: "ReceivableBalance",
+      validFor: {
+        startDateTime: "2018-06-15T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7688",
+        id: "7688",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\financialAccount\(id):application\json-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "FinancialAccount",
+  creditLimit: {
+    unit: "USD",
+    value: 3500
+  },
+  description: "This  financial account helps consolidate across all the branches.",
+  href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/1041",
+  id: "1041",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Consolidation Account",
+  state: "Active",
+  accountType: "Global",
+  relatedParty: [
+    {
+      role: "bill receiver",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@referredType": "Individual",
+        "@type": "PartyRefOrPartyRoleRef",
+        href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+        id: "2186",
+        name: "Gustave Flaubert"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "45678909876",
+      issuingJurisdiction: "Prefecture",
+      reason: "Social",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "9304357346341236",
+        href: "https://host:port/tmf-api/document/v5/attachment/9304357346341236",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-54321.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-54321.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Ludwig Borgia",
+      contactType: "secondary",
+      partyRoleType: "CustomerAccountRepresentative",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "EmailContactMedium",
+          preferred: false,
+          mediumType: "Email",
+          validFor: {
+            startDateTime: "2018-06-12T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          emailAddress: "alain.delon@best-actor.fr"
+        }
+      ],
+      relatedParty: {
+        role: "employee",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 50.58
+      },
+      balanceType: "ReceivableBalance",
+      validFor: {
+        startDateTime: "2018-06-15T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7688",
+        id: "7688",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\financialAccount\(id):application\json-patch-query+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "FinancialAccount",
+  creditLimit: {
+    unit: "USD",
+    value: 3500
+  },
+  description: "This  financial account helps consolidate across all the branches.",
+  href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/1041",
+  id: "1041",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Consolidation Account",
+  state: "Active",
+  accountType: "Global",
+  relatedParty: [
+    {
+      role: "bill receiver",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@referredType": "Individual",
+        "@type": "PartyRefOrPartyRoleRef",
+        href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+        id: "2186",
+        name: "Gustave Flaubert"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "45678909876",
+      issuingJurisdiction: "Prefecture",
+      reason: "Social",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "9304357346341236",
+        href: "https://host:port/tmf-api/document/v5/attachment/9304357346341236",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-54321.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-54321.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Ludwig Borgia",
+      contactType: "secondary",
+      partyRoleType: "CustomerAccountRepresentative",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "EmailContactMedium",
+          preferred: false,
+          mediumType: "Email",
+          validFor: {
+            startDateTime: "2018-06-12T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          emailAddress: "alain.delon@best-actor.fr"
+        }
+      ],
+      relatedParty: {
+        role: "employee",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 50.58
+      },
+      balanceType: "ReceivableBalance",
+      validFor: {
+        startDateTime: "2018-06-15T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7688",
+        id: "7688",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\financialAccount\(id):application\merge-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "FinancialAccount",
+  creditLimit: {
+    unit: "USD",
+    value: 3500
+  },
+  description: "This  financial account helps consolidate across all the branches.",
+  href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/1041",
+  id: "1041",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Consolidation Account",
+  state: "Active",
+  accountType: "Global",
+  relatedParty: [
+    {
+      role: "bill receiver",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@referredType": "Individual",
+        "@type": "PartyRefOrPartyRoleRef",
+        href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+        id: "2186",
+        name: "Gustave Flaubert"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "45678909876",
+      issuingJurisdiction: "Prefecture",
+      reason: "Social",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "9304357346341236",
+        href: "https://host:port/tmf-api/document/v5/attachment/9304357346341236",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-54321.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-54321.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Ludwig Borgia",
+      contactType: "secondary",
+      partyRoleType: "CustomerAccountRepresentative",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "EmailContactMedium",
+          preferred: false,
+          mediumType: "Email",
+          validFor: {
+            startDateTime: "2018-06-12T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          emailAddress: "alain.delon@best-actor.fr"
+        }
+      ],
+      relatedParty: {
+        role: "employee",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 50.58
+      },
+      balanceType: "ReceivableBalance",
+      validFor: {
+        startDateTime: "2018-06-15T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7688",
+        id: "7688",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\partyAccount\(id):application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "PartyAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/4458",
+  id: "4458",
+  name: "Travel account",
+  creditLimit: {
+    unit: "USD",
+    value: 5000
+  },
+  relatedParty: [
+    {
+      role: "owner",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/4665",
+        id: "4665",
+        name: "John Doe Ltd"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\partyAccount\(id):application\json-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "PartyAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/4458",
+  id: "4458",
+  name: "Travel account",
+  creditLimit: {
+    unit: "USD",
+    value: 5000
+  },
+  relatedParty: [
+    {
+      role: "owner",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/4665",
+        id: "4665",
+        name: "John Doe Ltd"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\partyAccount\(id):application\json-patch-query+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "PartyAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/4458",
+  id: "4458",
+  name: "Travel account",
+  creditLimit: {
+    unit: "USD",
+    value: 5000
+  },
+  relatedParty: [
+    {
+      role: "owner",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/4665",
+        id: "4665",
+        name: "John Doe Ltd"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\partyAccount\(id):application\merge-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "PartyAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/4458",
+  id: "4458",
+  name: "Travel account",
+  creditLimit: {
+    unit: "USD",
+    value: 5000
+  },
+  relatedParty: [
+    {
+      role: "owner",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/4665",
+        id: "4665",
+        name: "John Doe Ltd"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\settlementAccount\(id):application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "SettlementAccount",
+  paymentStatus: "Normal",
+  creditLimit: {
+    unit: "USD",
+    value: 25000
+  },
+  description: "This  settlement account ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/8790",
+  id: "8790",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Per Usage Account",
+  state: "inactive",
+  accountType: "Business",
+  billStructure: {
+    "@type": "BillStructure",
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/1451",
+        id: "1451",
+        name: "Web Page"
+      }
+    ],
+    format: {
+      "@type": "BillFormat",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8128",
+      id: "8128",
+      name: "Detailed invoice"
+    },
+    cycleSpecification: {
+      "@type": "BillingCycleSpecification",
+      dateShift: 62,
+      frequency: "monthly",
+      href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/1361",
+      id: "1361",
+      name: "Annual billing"
+    }
+  },
+  paymentPlan: [
+    {
+      "@type": "PaymentPlan",
+      numberOfPayments: 4,
+      paymentFrequency: "monthly",
+      priority: 3,
+      status: "Effective",
+      totalAmount: {
+        unit: "USD",
+        value: 543.8
+      },
+      planType: "regular",
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      paymentMethod: {
+        "@type": "PaymentMethodRef",
+        href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/1534",
+        id: "1534",
+        name: "professional payment"
+      }
+    }
+  ],
+  financialAccount: {
+    "@referredType": "FinancialAccount",
+    "@type": "FinancialAccountRef",
+    href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/2063",
+    id: "2063",
+    name: "Partnership account"
+  },
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/9124",
+    id: "9124",
+    name: "family payment"
+  },
+  relatedParty: [
+    {
+      role: "employee",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/5965",
+        id: "5965",
+        name: "Jimmy Doe"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "1256673452346345",
+        href: "https://host:port/tmf-api/document/v5/attachment/1256673452346345",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-555.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-555.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }, 
+    {
+      "@type": "TaxExemption",
+      id: "2",
+      certificateNumber: "1212555247",
+      issuingJurisdiction: "City of San Jose",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "City Tax",
+          taxType: "CityTax"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "902347285733567433412",
+        href: "https://host:port/tmf-api/document/v5/attachment/902347285733567433412",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-777.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/777/TaxExemptionCertificate-777.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-04-17T00:00:00.000Z",
+        endDateTime: "2019-02-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Virginie Cork",
+      contactType: "primary",
+      partyRoleType: "Publisher",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "GeographicAddressContactMedium",
+          preferred: false,
+          mediumType: "PostalAddress",
+          validFor: {
+            startDateTime: "2018-06-14T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          city: "Paris",
+          country: "France",
+          postCode: "75014",
+          street1: "15 Rue des Canards"
+        }
+      ],
+      relatedParty: {
+        role: "bill receiver",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 55.28
+      },
+      balanceType: "DepositBalance",
+      validFor: {
+        startDateTime: "2018-06-10T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-16T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7550",
+        id: "7550",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\settlementAccount\(id):application\json-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "SettlementAccount",
+  paymentStatus: "Normal",
+  creditLimit: {
+    unit: "USD",
+    value: 25000
+  },
+  description: "This  settlement account ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/8790",
+  id: "8790",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Per Usage Account",
+  state: "inactive",
+  accountType: "Business",
+  billStructure: {
+    "@type": "BillStructure",
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/1451",
+        id: "1451",
+        name: "Web Page"
+      }
+    ],
+    format: {
+      "@type": "BillFormat",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8128",
+      id: "8128",
+      name: "Detailed invoice"
+    },
+    cycleSpecification: {
+      "@type": "BillingCycleSpecification",
+      dateShift: 62,
+      frequency: "monthly",
+      href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/1361",
+      id: "1361",
+      name: "Annual billing"
+    }
+  },
+  paymentPlan: [
+    {
+      "@type": "PaymentPlan",
+      numberOfPayments: 4,
+      paymentFrequency: "monthly",
+      priority: 3,
+      status: "Effective",
+      totalAmount: {
+        unit: "USD",
+        value: 543.8
+      },
+      planType: "regular",
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      paymentMethod: {
+        "@type": "PaymentMethodRef",
+        href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/1534",
+        id: "1534",
+        name: "professional payment"
+      }
+    }
+  ],
+  financialAccount: {
+    "@referredType": "FinancialAccount",
+    "@type": "FinancialAccountRef",
+    href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/2063",
+    id: "2063",
+    name: "Partnership account"
+  },
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/9124",
+    id: "9124",
+    name: "family payment"
+  },
+  relatedParty: [
+    {
+      role: "employee",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/5965",
+        id: "5965",
+        name: "Jimmy Doe"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "1256673452346345",
+        href: "https://host:port/tmf-api/document/v5/attachment/1256673452346345",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-555.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-555.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }, 
+    {
+      "@type": "TaxExemption",
+      id: "2",
+      certificateNumber: "1212555247",
+      issuingJurisdiction: "City of San Jose",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "City Tax",
+          taxType: "CityTax"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "902347285733567433412",
+        href: "https://host:port/tmf-api/document/v5/attachment/902347285733567433412",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-777.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/777/TaxExemptionCertificate-777.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-04-17T00:00:00.000Z",
+        endDateTime: "2019-02-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Virginie Cork",
+      contactType: "primary",
+      partyRoleType: "Publisher",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "GeographicAddressContactMedium",
+          preferred: false,
+          mediumType: "PostalAddress",
+          validFor: {
+            startDateTime: "2018-06-14T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          city: "Paris",
+          country: "France",
+          postCode: "75014",
+          street1: "15 Rue des Canards"
+        }
+      ],
+      relatedParty: {
+        role: "bill receiver",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 55.28
+      },
+      balanceType: "DepositBalance",
+      validFor: {
+        startDateTime: "2018-06-10T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-16T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7550",
+        id: "7550",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\settlementAccount\(id):application\json-patch-query+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "SettlementAccount",
+  paymentStatus: "Normal",
+  creditLimit: {
+    unit: "USD",
+    value: 25000
+  },
+  description: "This  settlement account ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/8790",
+  id: "8790",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Per Usage Account",
+  state: "inactive",
+  accountType: "Business",
+  billStructure: {
+    "@type": "BillStructure",
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/1451",
+        id: "1451",
+        name: "Web Page"
+      }
+    ],
+    format: {
+      "@type": "BillFormat",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8128",
+      id: "8128",
+      name: "Detailed invoice"
+    },
+    cycleSpecification: {
+      "@type": "BillingCycleSpecification",
+      dateShift: 62,
+      frequency: "monthly",
+      href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/1361",
+      id: "1361",
+      name: "Annual billing"
+    }
+  },
+  paymentPlan: [
+    {
+      "@type": "PaymentPlan",
+      numberOfPayments: 4,
+      paymentFrequency: "monthly",
+      priority: 3,
+      status: "Effective",
+      totalAmount: {
+        unit: "USD",
+        value: 543.8
+      },
+      planType: "regular",
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      paymentMethod: {
+        "@type": "PaymentMethodRef",
+        href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/1534",
+        id: "1534",
+        name: "professional payment"
+      }
+    }
+  ],
+  financialAccount: {
+    "@referredType": "FinancialAccount",
+    "@type": "FinancialAccountRef",
+    href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/2063",
+    id: "2063",
+    name: "Partnership account"
+  },
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/9124",
+    id: "9124",
+    name: "family payment"
+  },
+  relatedParty: [
+    {
+      role: "employee",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/5965",
+        id: "5965",
+        name: "Jimmy Doe"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "1256673452346345",
+        href: "https://host:port/tmf-api/document/v5/attachment/1256673452346345",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-555.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-555.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }, 
+    {
+      "@type": "TaxExemption",
+      id: "2",
+      certificateNumber: "1212555247",
+      issuingJurisdiction: "City of San Jose",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "City Tax",
+          taxType: "CityTax"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "902347285733567433412",
+        href: "https://host:port/tmf-api/document/v5/attachment/902347285733567433412",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-777.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/777/TaxExemptionCertificate-777.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-04-17T00:00:00.000Z",
+        endDateTime: "2019-02-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Virginie Cork",
+      contactType: "primary",
+      partyRoleType: "Publisher",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "GeographicAddressContactMedium",
+          preferred: false,
+          mediumType: "PostalAddress",
+          validFor: {
+            startDateTime: "2018-06-14T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          city: "Paris",
+          country: "France",
+          postCode: "75014",
+          street1: "15 Rue des Canards"
+        }
+      ],
+      relatedParty: {
+        role: "bill receiver",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 55.28
+      },
+      balanceType: "DepositBalance",
+      validFor: {
+        startDateTime: "2018-06-10T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-16T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7550",
+        id: "7550",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\settlementAccount\(id):application\merge-patch+json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "SettlementAccount",
+  paymentStatus: "Normal",
+  creditLimit: {
+    unit: "USD",
+    value: 25000
+  },
+  description: "This  settlement account ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/8790",
+  id: "8790",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Per Usage Account",
+  state: "inactive",
+  accountType: "Business",
+  billStructure: {
+    "@type": "BillStructure",
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/1451",
+        id: "1451",
+        name: "Web Page"
+      }
+    ],
+    format: {
+      "@type": "BillFormat",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8128",
+      id: "8128",
+      name: "Detailed invoice"
+    },
+    cycleSpecification: {
+      "@type": "BillingCycleSpecification",
+      dateShift: 62,
+      frequency: "monthly",
+      href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/1361",
+      id: "1361",
+      name: "Annual billing"
+    }
+  },
+  paymentPlan: [
+    {
+      "@type": "PaymentPlan",
+      numberOfPayments: 4,
+      paymentFrequency: "monthly",
+      priority: 3,
+      status: "Effective",
+      totalAmount: {
+        unit: "USD",
+        value: 543.8
+      },
+      planType: "regular",
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      paymentMethod: {
+        "@type": "PaymentMethodRef",
+        href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/1534",
+        id: "1534",
+        name: "professional payment"
+      }
+    }
+  ],
+  financialAccount: {
+    "@referredType": "FinancialAccount",
+    "@type": "FinancialAccountRef",
+    href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/2063",
+    id: "2063",
+    name: "Partnership account"
+  },
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/9124",
+    id: "9124",
+    name: "family payment"
+  },
+  relatedParty: [
+    {
+      role: "employee",
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/5965",
+        id: "5965",
+        name: "Jimmy Doe"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "1256673452346345",
+        href: "https://host:port/tmf-api/document/v5/attachment/1256673452346345",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-555.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-555.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }, 
+    {
+      "@type": "TaxExemption",
+      id: "2",
+      certificateNumber: "1212555247",
+      issuingJurisdiction: "City of San Jose",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "City Tax",
+          taxType: "CityTax"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "902347285733567433412",
+        href: "https://host:port/tmf-api/document/v5/attachment/902347285733567433412",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-777.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/777/TaxExemptionCertificate-777.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-04-17T00:00:00.000Z",
+        endDateTime: "2019-02-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Virginie Cork",
+      contactType: "primary",
+      partyRoleType: "Publisher",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "GeographicAddressContactMedium",
+          preferred: false,
+          mediumType: "PostalAddress",
+          validFor: {
+            startDateTime: "2018-06-14T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          city: "Paris",
+          country: "France",
+          postCode: "75014",
+          street1: "15 Rue des Canards"
+        }
+      ],
+      relatedParty: {
+        role: "bill receiver",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 55.28
+      },
+      balanceType: "DepositBalance",
+      validFor: {
+        startDateTime: "2018-06-10T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-16T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7550",
+        id: "7550",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billFormat:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "@type": "BillFormat",
+    id: "42",
+    name: "simple invoice"
+  }, 
+  {
+    "@type": "BillFormat",
+    id: "43",
+    name: "detailed invoice"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billFormat\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillFormat",
+  description: "This  bill format gives a detailed invoice",
+  href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8718",
+  id: "8718",
+  name: "Detailed invoice"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billPresentationMedia:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "@type": "BillPresentationMedia",
+    id: "42",
+    name: "signed mail"
+  }, 
+  {
+    "@type": "BillPresentationMedia",
+    id: "43",
+    name: "postal"
+  }, 
+  {
+    "@type": "BillPresentationMedia",
+    id: "44",
+    name: "web"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billPresentationMedia\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillPresentationMedia",
+  description: "This bill presentation media ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/4506",
+  id: "4506",
+  name: "Electronic"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billingAccount:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "@type": "BillingAccount",
+    id: "AC-SIA-BA-001",
+    href: "https://host:port/tmf-api/accountManagement/v5/billingAccount/AC-SIA-BA-001",
+    name: "AlphaConsult SIA Billing Account",
+    accountType: "Business",
+    billStructure: {
+      "@type": "BillStructure",
+      cycleSpecification: {
+        "@type": "BillingCycleSpecification",
+        id: "BCS-MONTHLY-01",
+        href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/BCS-MONTHLY-01",
+        name: "Monthly billing",
+        frequency: "monthly"
+      }
+    },
+    defaultPaymentMethod: {
+      "@type": "PaymentMethodRef",
+      id: "PM-BANK-001",
+      href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/PM-BANK-001",
+      name: "Bank Transfer"
+    },
+    relatedParty: [
+      {
+        "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+        role: "billReceiver",
+        partyOrPartyRole: {
+          "@type": "PartyRefOrPartyRoleRef",
+          "@referredType": "Organization",
+          id: "ORG-ALPHA-001",
+          href: "https://host:port/tmf-api/partyManagement/v5/organization/ORG-ALPHA-001",
+          name: "AlphaConsult SIA"
+        }
+      }
+    ]
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billingAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Build BillingAccount Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var accountId = (vars.id default "AC-SIA-BA-001") as String
+---
+{
+  "@type": "BillingAccount",
+  id: accountId,
+  href: "https://host:port/tmf-api/accountManagement/v5/billingAccount/" ++ accountId,
+  name: "AlphaConsult SIA Billing Account",
+  description: "MVP demo account linked to AlphaConsult SIA",
+  state: "Active",
+  accountType: "Business",
+  paymentStatus: "clear",
+  billStructure: {
+    "@type": "BillStructure",
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        id: "BPM-ELECTRONIC-01",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/BPM-ELECTRONIC-01",
+        name: "Electronic"
+      }
+    ],
+    format: {
+      "@type": "BillFormat",
+      id: "BF-ITEMIZED-01",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/BF-ITEMIZED-01",
+      name: "Detailed invoice"
+    },
+    cycleSpecification: {
+      "@type": "BillingCycleSpecification",
+      id: "BCS-MONTHLY-01",
+      href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/BCS-MONTHLY-01",
+      name: "Monthly billing",
+      frequency: "monthly",
+      dateShift: 0
+    }
+  },
+  paymentPlan: [
+    {
+      "@type": "PaymentPlan",
+      priority: 1,
+      status: "Effective",
+      paymentFrequency: "monthly",
+      planType: "regular",
+      paymentMethod: {
+        "@type": "PaymentMethodRef",
+        id: "PM-BANK-001",
+        href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/PM-BANK-001",
+        name: "Bank Transfer"
+      }
+    }
+  ],
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    id: "PM-BANK-001",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/PM-BANK-001",
+    name: "Bank Transfer"
+  },
+  relatedParty: [
+    {
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      role: "billReceiver",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        id: "ORG-ALPHA-001",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/ORG-ALPHA-001",
+        name: "AlphaConsult SIA"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billingCycleSpecification:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "@type": "BillCycleSpecification",
+    id: "9473",
+    name: "bimonthly"
+  }, 
+  {
+    "@type": "BillCycleSpecification",
+    id: "9473",
+    name: "monthly"
+  }, 
+  {
+    "@type": "BillCycleSpecification",
+    id: "9899",
+    name: "weekly"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\billingCycleSpecification\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillCycleSpecification",
+  billingDateShift: 20,
+  billingPeriod: "monthly",
+  chargeDateOffset: 10,
+  creditDateOffset: 15,
+  description: "This billing cycle specification describes the cycle for 20th of the month.",
+  frequency: "monthly",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/4556",
+  id: "4556",
+  mailingDateOffset: 25,
+  name: "Monthly billing",
+  paymentDueDateOffset: 30,
+  validFor: {
+    startDateTime: "2018-06-10T00:00:00.000Z",
+    endDateTime: "2025-01-10T00:00:00.000Z"
+  }
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\financialAccount:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    creditLimit: {
+      unit: "USD",
+      value: 3500
+    },
+    description: "This  financial account ...",
+    "@type": "FinancialAccount",
+    href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/1041",
+    id: "1041",
+    lastModified: "2018-06-14T00:00:00.000Z",
+    name: "Administration account",
+    state: "Active",
+    accountType: "Global",
+    relatedParty: [
+      {
+        role: "bill receiver",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    ],
+    taxExemption: [
+      {
+        "@type": "TaxExemption",
+        id: "1",
+        certificateNumber: "45678909876",
+        issuingJurisdiction: "Prefecture",
+        reason: "Social",
+        taxDefinition: [
+          {
+            "@type": "TaxDefinition",
+            id: "96",
+            name: "Value Added Tax",
+            taxType: "federalVat"
+          }
+        ],
+        attachment: {
+          "@type": "Attachment",
+          id: "9304357346341236",
+          href: "https://host:port/tmf-api/document/v5/attachment/9304357346341236",
+          attachmentType: "taxExemptionCertificate",
+          name: "TaxExemptionCertificate-54321.pdf",
+          description: "Electronic version of the tax exemption certificate",
+          mimeType: "application/pdf",
+          url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-54321.pdf"
+        },
+        validFor: {
+          startDateTime: "2018-06-13T00:00:00.000Z",
+          endDateTime: "2019-01-10T00:00:00.000Z"
+        }
+      }
+    ],
+    contact: [
+      {
+        "@type": "Contact",
+        contactName: "Ludwig Borgia",
+        contactType: "secondary",
+        partyRoleType: "CustomerAccountRepresentative",
+        validFor: {
+          startDateTime: "2018-06-11T00:00:00.000Z",
+          endDateTime: "2019-01-10T00:00:00.000Z"
+        },
+        contactMedium: [
+          {
+            "@type": "EmailContactMedium",
+            preferred: false,
+            mediumType: "Email",
+            validFor: {
+              startDateTime: "2018-06-12T00:00:00.000Z",
+              endDateTime: "2019-01-10T00:00:00.000Z"
+            },
+            emailAddress: "alain.delon@best-actor.fr"
+          }
+        ],
+        relatedParty: {
+          role: "employee",
+          "@type": "RelatedPartyRefOrPartyRoleRef",
+          partyOrPartyRole: {
+            "@referredType": "Individual",
+            "@type": "PartyRefOrPartyRoleRef",
+            href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+            id: "2186",
+            name: "Gustave Flaubert"
+          }
+        }
+      }
+    ],
+    accountBalance: [
+      {
+        "@type": "AccountBalance",
+        amount: {
+          unit: "USD",
+          value: 50.58
+        },
+        balanceType: "ReceivableBalance",
+        validFor: {
+          startDateTime: "2018-06-15T00:00:00.000Z",
+          endDateTime: "2019-01-10T00:00:00.000Z"
+        }
+      }
+    ],
+    accountRelationship: [
+      {
+        "@type": "AccountRelationship",
+        relationshipType: "contains",
+        validFor: {
+          startDateTime: "2018-06-13T00:00:00.000Z",
+          endDateTime: "2019-01-10T00:00:00.000Z"
+        },
+        account: {
+          "@referredType": "BillingAccount",
+          "@type": "AccountRef",
+          href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7688",
+          id: "7688",
+          name: "Travel Account"
+        }
+      }
+    ]
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\financialAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "FinancialAccount",
+  creditLimit: {
+    unit: "USD",
+    value: 3500
+  },
+  description: "This  financial account ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/1041",
+  id: "1041",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Administration account",
+  state: "Active",
+  accountType: "Global",
+  relatedParty: [
+    {
+      role: "bill receiver",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@referredType": "Individual",
+        "@type": "PartyRefOrPartyRoleRef",
+        href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+        id: "2186",
+        name: "Gustave Flaubert"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "45678909876",
+      issuingJurisdiction: "Prefecture",
+      reason: "Social",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "9304357346341236",
+        href: "https://host:port/tmf-api/document/v5/attachment/9304357346341236",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-54321.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-54321.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Ludwig Borgia",
+      contactType: "secondary",
+      partyRoleType: "CustomerAccountRepresentative",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "EmailContactMedium",
+          preferred: false,
+          mediumType: "Email",
+          validFor: {
+            startDateTime: "2018-06-12T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          emailAddress: "alain.delon@best-actor.fr"
+        }
+      ],
+      relatedParty: {
+        role: "employee",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 50.58
+      },
+      balanceType: "ReceivableBalance",
+      validFor: {
+        startDateTime: "2018-06-15T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7688",
+        id: "7688",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\partyAccount:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "@type": "PartyAccount",
+    id: "9473",
+    href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/9473",
+    creditLimit: {
+      unit: "USD",
+      value: 50000
+    },
+    name: "Administration Account"
+  }, 
+  {
+    "@type": "PartyAccount",
+    id: "9899",
+    href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/9899",
+    creditLimit: {
+      unit: "USD",
+      value: 1000000
+    },
+    name: "Bahamas Account"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\partyAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "PartyAccount",
+  creditLimit: {
+    unit: "USD",
+    value: 20000
+  },
+  description: "This  party account ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/4458",
+  id: "4458",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Travel account",
+  state: "Suspended",
+  accountType: "Business",
+  paymentStatus: "In Arrears",
+  billStructure: {
+    "@type": "BillStructure",
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/8800",
+        id: "8800",
+        name: "Electronic"
+      }
+    ],
+    format: {
+      "@type": "BillFormat",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/4824",
+      id: "4824",
+      name: "Summary invoice"
+    },
+    cycleSpecification: {
+      "@type": "BillingCycleSpecification",
+      dateShift: 8,
+      frequency: "monthly",
+      href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/1309",
+      id: "1309",
+      name: "Monthly billing"
+    }
+  },
+  paymentPlan: [
+    {
+      "@type": "PaymentPlan",
+      numberOfPayments: 12,
+      paymentFrequency: "monthly",
+      priority: 2,
+      status: "Ineffective",
+      totalAmount: {
+        unit: "USD",
+        value: 100
+      },
+      planType: "regular",
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      paymentMethod: {
+        "@type": "PaymentMethodRef",
+        href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/6895",
+        id: "6895",
+        name: "family payment"
+      }
+    }
+  ],
+  financialAccount: {
+    "@referredType": "FinancialAccount",
+    "@type": "FinancialAccountRef",
+    href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/2209",
+    id: "2209",
+    name: "Travel account"
+  },
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/6514",
+    id: "6514",
+    name: "family payment"
+  },
+  relatedParty: [
+    {
+      role: "owner",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/4665",
+        id: "4665",
+        name: "John Doe Ltd"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      certificateNumber: "45678889876",
+      issuingJurisdiction: "USA",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "66235558562345",
+        href: "https://host:port/tmf-api/document/v5/attachment/66235558562345",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-654321.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-654321.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Anna Cristal",
+      contactType: "primary",
+      partyRoleType: "Publisher",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "GeographicAddressContactMedium",
+          preferred: false,
+          mediumType: "PostalAddress",
+          validFor: {
+            startDateTime: "2018-06-14T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          city: "Paris",
+          country: "France",
+          postCode: "75014",
+          street1: "15 Rue des Canards"
+        }
+      ],
+      relatedParty: {
+        role: "bill receiver",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 53.29
+      },
+      balanceType: "DepositBalance",
+      validFor: {
+        startDateTime: "2018-06-13T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-10T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/9522",
+        id: "9522",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\settlementAccount:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "@type": "SettlementAccount",
+    id: "442",
+    href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/442",
+    name: "API Usage Account"
+  }, 
+  {
+    "@type": "SettlementAccount",
+    id: "443",
+    href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/443",
+    name: "Storage Usage Account"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\settlementAccount\(id):TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "SettlementAccount",
+  paymentStatus: "In Collection",
+  creditLimit: {
+    unit: "USD",
+    value: 20000
+  },
+  description: "This  settlement account ...",
+  href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/8790",
+  id: "8790",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Per Usage Account",
+  state: "inactive",
+  accountType: "Business",
+  billStructure: {
+    "@type": "BillStructure",
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/1451",
+        id: "1451",
+        name: "Web Page"
+      }
+    ],
+    format: {
+      "@type": "BillFormat",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8128",
+      id: "8128",
+      name: "Detailed invoice"
+    },
+    cycleSpecification: {
+      "@type": "BillingCycleSpecification",
+      dateShift: 62,
+      frequency: "monthly",
+      href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/1361",
+      id: "1361",
+      name: "Annual billing"
+    }
+  },
+  paymentPlan: [
+    {
+      "@type": "PaymentPlan",
+      numberOfPayments: 4,
+      paymentFrequency: "monthly",
+      priority: 3,
+      status: "Effective",
+      totalAmount: {
+        unit: "USD",
+        value: 543.8
+      },
+      planType: "regular",
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      paymentMethod: {
+        "@type": "PaymentMethodRef",
+        href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/1534",
+        id: "1534",
+        name: "professional payment"
+      }
+    }
+  ],
+  financialAccount: {
+    "@referredType": "FinancialAccount",
+    "@type": "FinancialAccountRef",
+    href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/2063",
+    id: "2063",
+    name: "Partnership account"
+  },
+  defaultPaymentMethod: {
+    "@type": "PaymentMethodRef",
+    href: "https://host:port/tmf-api/paymentMethods/v5/paymentMethod/9124",
+    id: "9124",
+    name: "family payment"
+  },
+  relatedParty: [
+    {
+      role: "bill receiver",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@referredType": "Individual",
+        "@type": "PartyRefOrPartyRoleRef",
+        href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+        id: "2186",
+        name: "Gustave Flaubert"
+      }
+    }
+  ],
+  taxExemption: [
+    {
+      "@type": "TaxExemption",
+      id: "1",
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      reason: "Embassy",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinition",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "1256673452346345",
+        href: "https://host:port/tmf-api/document/v5/attachment/1256673452346345",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-555.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "http://host:port/DocumentManager/666/TaxExemptionCertificate-555.pdf"
+      },
+      validFor: {
+        startDateTime: "2018-06-17T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  contact: [
+    {
+      "@type": "Contact",
+      contactName: "Virginie Cork",
+      contactType: "primary",
+      partyRoleType: "Publisher",
+      validFor: {
+        startDateTime: "2018-06-11T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      contactMedium: [
+        {
+          "@type": "GeographicAddressContactMedium",
+          preferred: false,
+          mediumType: "PostalAddress",
+          validFor: {
+            startDateTime: "2018-06-14T00:00:00.000Z",
+            endDateTime: "2019-01-10T00:00:00.000Z"
+          },
+          city: "Paris",
+          country: "France",
+          postCode: "75014",
+          street1: "15 Rue des Canards"
+        }
+      ],
+      relatedParty: {
+        role: "bill receiver",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@referredType": "Individual",
+          "@type": "PartyRefOrPartyRoleRef",
+          href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+          id: "2186",
+          name: "Gustave Flaubert"
+        }
+      }
+    }
+  ],
+  accountBalance: [
+    {
+      "@type": "AccountBalance",
+      amount: {
+        unit: "USD",
+        value: 55.28
+      },
+      balanceType: "DepositBalance",
+      validFor: {
+        startDateTime: "2018-06-10T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      }
+    }
+  ],
+  accountRelationship: [
+    {
+      "@type": "AccountRelationship",
+      relationshipType: "contains",
+      validFor: {
+        startDateTime: "2018-06-16T00:00:00.000Z",
+        endDateTime: "2019-01-10T00:00:00.000Z"
+      },
+      account: {
+        "@referredType": "BillingAccount",
+        "@type": "AccountRef",
+        href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/7550",
+        id: "7550",
+        name: "Travel Account"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\billFormat:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillFormat",
+  href: "https://host:port/tmf-api/accountManagement/v5/billFormat/8718",
+  id: "8718",
+  name: "Detailed invoice"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\billPresentationMedia:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillPresentationMedia",
+  href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/4506",
+  id: "4506",
+  name: "Electronic"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\billingAccount:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var generatedId = "AC-SIA-BA-001"
+var paymentMethodId = (payload.paymentMethod.id default payload.defaultPaymentMethod.id default "PM-BANK-001") as String
+var paymentMethod = {
+  "@type": "PaymentMethodRef",
+  id: paymentMethodId,
+  href: payload.paymentMethod.href default payload.defaultPaymentMethod.href default ("https://host:port/tmf-api/paymentMethods/v5/paymentMethod/" ++ paymentMethodId),
+  name: payload.paymentMethod.name default payload.defaultPaymentMethod.name default "Bank Transfer"
+}
+var incomingCycle = payload.billingCycleSpecification default {}
+var cycleSpecification = {
+  "@type": "BillingCycleSpecification",
+  id: incomingCycle.id default "BCS-MONTHLY-01",
+  href: incomingCycle.href default "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/BCS-MONTHLY-01",
+  name: incomingCycle.name default "Monthly billing",
+  frequency: incomingCycle.frequency default "monthly",
+  dateShift: incomingCycle.dateShift default incomingCycle.billingDateShift default 0
+}
+var normalizedRelatedParty = if (sizeOf(payload.relatedParty default []) > 0)
+  (payload.relatedParty default []) map (rp) -> {
+    "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+    role: rp.role default "billReceiver",
+    partyOrPartyRole: {
+      "@type": "PartyRefOrPartyRoleRef",
+      "@referredType": rp."@referredType" default "Organization",
+      id: rp.id default "ORG-ALPHA-001",
+      href: rp.href default ("https://host:port/tmf-api/partyManagement/v5/organization/" ++ ((rp.id default "ORG-ALPHA-001") as String)),
+      name: rp.name default "AlphaConsult SIA"
+    }
+  }
+else
+  [
+    {
+      "@type": "RelatedPartyRefOrRelatedPartyRoleRef",
+      role: "billReceiver",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        id: "ORG-ALPHA-001",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/ORG-ALPHA-001",
+        name: "AlphaConsult SIA"
+      }
+    }
+  ]
+---
+{
+  "@type": "BillingAccount",
+  id: generatedId,
+  href: "https://host:port/tmf-api/accountManagement/v5/billingAccount/" ++ generatedId,
+  description: payload.description default "MVP demo account linked to AlphaConsult SIA",
+  ratingType: payload.ratingType default "postpaid",
+  category: payload.category default "B2B enterprise",
+  currencyCode: payload.currencyCode default "EUR",
+  name: (payload.name default "AlphaConsult SIA Billing Account"),
+  accountType: (payload.accountType default "Business"),
+  state: (payload.state default "Active"),
+  billStructure: (payload.billStructure default {
+    "@type": "BillStructure",
+    format: {
+      "@type": "BillFormat",
+      id: "BF-ITEMIZED-01",
+      href: "https://host:port/tmf-api/accountManagement/v5/billFormat/BF-ITEMIZED-01",
+      name: "Detailed invoice"
+    },
+    presentationMedia: [
+      {
+        "@type": "BillPresentationMedia",
+        id: "BPM-ELECTRONIC-01",
+        href: "https://host:port/tmf-api/accountManagement/v5/billPresentationMedia/BPM-ELECTRONIC-01",
+        name: "Electronic"
+      }
+    ],
+    cycleSpecification: cycleSpecification
+  }),
+  paymentPlan: (payload.paymentPlan default [
+    {
+      "@type": "PaymentPlan",
+      priority: 1,
+      status: "Effective",
+      paymentFrequency: "monthly",
+      planType: "regular",
+      paymentMethod: paymentMethod
+    }
+  ]),
+  defaultPaymentMethod: paymentMethod,
+  relatedParty: normalizedRelatedParty
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus">201</ee:set-variable>
+                <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "Location": "https://host:port/tmf-api/accountManagement/v5/billingAccount/AC-SIA-BA-001"
+}]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </flow>
+    <flow name="post:\billingCycleSpecification:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "BillCycleSpecification",
+  href: "https://host:port/tmf-api/accountManagement/v5/billingCycleSpecification/4556",
+  id: "4556",
+  name: "Monthly billing"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\financialAccount:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "FinancialAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/financialAccount/1041",
+  id: "1041",
+  lastModified: "2018-06-14T00:00:00.000Z",
+  name: "Administration account"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\hub:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\hub:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billFormatAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billFormatAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billFormatCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billFormatCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billFormatDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billFormatDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billFormatStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billFormatStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billPresentationMediaAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billPresentationMediaAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billPresentationMediaCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billPresentationMediaCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billPresentationMediaDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billPresentationMediaDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billPresentationMediaStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billPresentationMediaStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingCycleSpecificationAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingCycleSpecificationAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingCycleSpecificationCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingCycleSpecificationCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingCycleSpecificationDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingCycleSpecificationDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\billingCycleSpecificationStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\billingCycleSpecificationStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\financialAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\financialAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\financialAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\financialAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\financialAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\financialAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\financialAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\financialAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\partyAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\partyAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\partyAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\partyAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\partyAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\partyAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\partyAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\partyAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\settlementAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\settlementAccountAttributeValueChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\settlementAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\settlementAccountCreateEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\settlementAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\settlementAccountDeleteEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\settlementAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\settlementAccountStateChangeEvent:application\json:TMF666-Account_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\partyAccount:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "PartyAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/partyAccount/4458",
+  id: "4458",
+  name: "Travel account",
+  relatedParty: [
+    {
+      role: "owner",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@type": "PartyRefOrPartyRoleRef",
+        "@referredType": "Organization",
+        href: "https://host:port/tmf-api/partyManagement/v5/organization/4665",
+        id: "4665",
+        name: "John Doe Ltd"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\settlementAccount:application\json:TMF666-Account_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "@type": "SettlementAccount",
+  href: "https://host:port/tmf-api/accountManagement/v5/settlementAccount/8790",
+  id: "8790",
+  name: "Per Usage Account",
+  relatedParty: [
+    {
+      role: "bill receiver",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        "@referredType": "Individual",
+        "@type": "PartyRefOrPartyRoleRef",
+        href: "https://host:port/tmf-api/partyManagement/v5/individual/2186",
+        id: "2186",
+        name: "Gustave Flaubert"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>

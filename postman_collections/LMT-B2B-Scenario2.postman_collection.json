@@ -1,0 +1,401 @@
+{
+  "info": {
+    "_postman_id": "be486b8b-3705-4183-9be5-c401d2cbe3e3",
+    "name": "LMT-B2B-Scenario2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34073391"
+  },
+  "item": [
+    {
+      "name": "Step1-PostAccount-TMF666",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"AlphaConsult SIA - Main Billing Account\",\n    \"description\": \"Primary B2B billing account for Managed Connectivity & DaaS Bundle\",\n    \"ratingType\": \"postpaid\",\n    \"category\": \"B2B enterprise\",\n    \"currencyCode\": \"EUR\",\n    \"accountType\": \"Corporate\",\n    \"relatedParty\": [\n      {\n        \"id\": \"cust-alphaconsult-01\",\n        \"name\": \"AlphaConsult SIA\",\n        \"role\": \"Customer\",\n        \"@type\": \"RelatedParty\",\n        \"@referredType\": \"Organization\"\n      }\n    ],\n    \"billingCycleSpecification\": {\n      \"name\": \"Monthly - First Day of Month\",\n      \"frequency\": \"monthly\",\n      \"billingDateShift\": 1,\n      \"@type\": \"BillingCycleSpecification\"\n    },\n    \"paymentMethod\": {\n      \"id\": \"pm-bank-transfer-01\",\n      \"name\": \"Bank Transfer / Direct Debit\",\n      \"@type\": \"PaymentMethodRef\"\n    },\n    \"contact\": [\n      {\n        \"contactType\": \"Billing Contact\",\n        \"contactName\": \"Anna Sales Agent\",\n        \"emailAddress\": \"billing@alphaconsult.lv\",\n        \"@type\": \"Contact\"\n      }\n    ],\n    \"@type\": \"BillingAccount\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/billingAccount",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf666-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billingAccount"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step2-GetAccount-TMF666",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/billingAccount/AC-SIA-BA-001",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf666-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billingAccount",
+            "AC-SIA-BA-001"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step3-Product-TMF620",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf620-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/productOffering",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf620-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOffering"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step4-Product-DaaS-TMF620",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf620-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/productOffering/PO-DAAS-LAPTOP-001",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf620-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOffering",
+            "PO-DAAS-LAPTOP-001"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step5-ProductOfferingPrice-TMF620",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf620-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/productOfferingPrice",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf620-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOfferingPrice"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step6-placeOrder-TMF641",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"externalId\": \"EXT-DEMO-0001\",\n    \"category\": \"Managed Connectivity + DaaS\",\n    \"description\": \"Activate enterprise bundle: unlimited mobile voice/data, FWA internet, 36-month laptop DaaS\",\n    \"serviceOrderItem\": [\n      {\n        \"id\": \"1\",\n        \"action\": \"add\",\n        \"service\": { \"name\": \"Unlimited Mobile Voice & Data - Employee Lines\", \"@type\": \"Service\" }\n      }\n    ]\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-641-serviceorder-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/serviceOrder",
+          "protocol": "https",
+          "host": [
+            "b2b-641-serviceorder-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "serviceOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step7-GetOrder-TMF641",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://b2b-641-serviceorder-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/serviceOrder",
+          "protocol": "https",
+          "host": [
+            "b2b-641-serviceorder-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "serviceOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step8-GetOrderID-TMF461",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://b2b-641-serviceorder-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/serviceOrder/SO-12345678-20260807140000",
+          "protocol": "https",
+          "host": [
+            "b2b-641-serviceorder-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "serviceOrder",
+            "SO-12345678-20260807140000"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step9-ProductOrder-TMF622",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"externalId\":\"EXT-ALPHA-001\",\n    \"description\":\"AlphaConsult DaaS laptop order\",\n    \"category\":\"enterprise\",\n    \"relatedParty\":[\n      {\"id\":\"ALPHACONSULT-SIA\",\"name\":\"AlphaConsult SIA\",\"role\":\"customer\"}\n    ],\n    \"billingAccount\":{\"id\":\"BAC-B2B-1001\",\"name\":\"AlphaConsult Billing\"},\n    \"productOrderItem\":[\n      {\n        \"id\":\"1\",\n        \"action\":\"add\",\n        \"quantity\":1,\n        \"productOffering\":{\"id\":\"OFFERING_DAAS_LAPTOP\",\"name\":\"DaaS Laptop 36M\"},\n        \"product\":{\"name\":\"DaaS Laptop Device\"}\n      }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder",
+          "protocol": "https",
+          "host": [
+            "b2b-warehouse-tmf622-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step10-ProductOrderEvent-inProgress-TMF622",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"state\":\"inProgress\",\n    \"productOrderItem\":[\n      {\n        \"id\":\"1\",\n        \"action\":\"add\",\n        \"quantity\":1,\n        \"productOffering\":{\"id\":\"OFFERING_DAAS_LAPTOP\",\"name\":\"DaaS Laptop 36M\"},\n        \"product\":{\"name\":\"DaaS Laptop Device\"}\n      }\n    ]\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-warehouse-tmf622-dronst.5sc6y6-2.usa-e2.cloudhub.io/api/productOrder/:productOrderId",
+          "protocol": "https",
+          "host": [
+            "b2b-warehouse-tmf622-dronst",
+            "5sc6y6-2",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "productOrder",
+            ":productOrderId"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            }
+          ],
+          "variable": [
+            {
+              "key": "productOrderId",
+              "value": "ORD-B2B-20260810084056"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "B2B-Scenario-E2E-ExperienceAPI-Webhook",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"scenarioId\": \"B2B-API-010-ALPHA\",\n    \"customer\": {\n      \"customerId\": \"CUST-ALPHA-001\",\n      \"customerName\": \"AlphaConsult SIA\",\n      \"employeeCount\": 12,\n      \"industry\": \"Logistics\"\n    },\n    \"bundleName\": \"Managed Connectivity + DaaS\",\n    \"bundleItems\": [\n      {\n        \"itemType\": \"MOBILE_LINE\",\n        \"productOfferingId\": \"PO-MOB-UNL-001\",\n        \"productOfferingName\": \"Unlimited Mobile Voice & Data\",\n        \"quantity\": 12,\n        \"billingLevel\": \"EMPLOYEE\"\n      },\n      {\n        \"itemType\": \"FWA_INTERNET\",\n        \"productOfferingId\": \"PO-FWA-BIZ-001\",\n        \"productOfferingName\": \"FWA Business Internet\",\n        \"quantity\": 1,\n        \"billingLevel\": \"SITE\"\n      },\n      {\n        \"itemType\": \"DEVICE_DAAS\",\n        \"productOfferingId\": \"PO-DAAS-LAPTOP-001\",\n        \"productOfferingName\": \"Laptop DaaS 36 months\",\n        \"quantity\": 12,\n        \"termMonths\": 36,\n        \"billingLevel\": \"ASSET\"\n      }\n    ],\n    \"billingPreferences\": {\n      \"paymentMethod\": \"Bank Transfer\",\n      \"billingCycle\": \"MONTHLY\"\n    }\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-scenario2-billingsystem-eapi-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/demo/alphaConsult/onboarding",
+          "protocol": "https",
+          "host": [
+            "b2b-scenario2-billingsystem-eapi-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "demo",
+            "alphaConsult",
+            "onboarding"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "B2B-Scenario-E2E-ExperienceAPI-Status-OK-Final",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-scenario2-billingsystem-eapi-dronst.5sc6y6-4.usa-e2.cloudhub.io/api/demo/alphaConsult/pricing",
+          "protocol": "https",
+          "host": [
+            "b2b-scenario2-billingsystem-eapi-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "demo",
+            "alphaConsult",
+            "pricing"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

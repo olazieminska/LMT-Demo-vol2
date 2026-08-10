@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <error-handler name="tmf632-shared-error-handler">
+        <on-error-propagate type="APP:DUPLICATE_REGISTRATION">
+            <ee:transform>
+                <ee:message>
+                    <ee:set-payload resource="dw/duplicate-registration-error.dwl"/>
+                </ee:message>
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus">409</ee:set-variable>
+                </ee:variables>
+            </ee:transform>
+        </on-error-propagate>
+    </error-handler>
+
+</mule>

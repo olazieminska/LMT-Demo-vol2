@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "Pellentesque",
+    "recipient": "amet"
+  },
+  "identity": {
+    "passportNumber": "erat",
+    "nationality": "eget",
+    "issuingCountry": "sodales",
+    "givenName": "Dallas",
+    "familyName": "Shokida",
+    "countryOfResidence": "viverra",
+    "birthDate": "a",
+    "email": "Aleshia.Smithers@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 44,
+    "currency": "semper",
+    "offeringId": "Fusce"
+  },
+  "payment": {
+    "amount": 75,
+    "currency": "In",
+    "cardToken": "nunc"
+  },
+  "consent": {
+    "privacyProfileId": "sodales",
+    "marketingConsent": true,
+    "privacyAccepted": true,
+    "agreedToTerms": false
+  }
+}

@@ -1,0 +1,1847 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd ">
+    <configuration-properties file="legal-entity-ingestion.properties" />
+    <http:listener-config name="TMF632-Party_Management-v5.0.0.oas-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8082" />
+    </http:listener-config>
+    <apikit:config name="TMF632-Party_Management-v5.0.0.oas-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:tmf632-partymanagement:5.0.0:oas:zip:TMF632-Party_Management-v5.0.0.oas.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="partyWebhookRequestConfig">
+        <http:request-connection protocol="${webhook.protocol}" host="${webhook.host}" port="${webhook.port}" />
+    </http:request-config>
+    <os:object-store name="partyObjectStore" persistent="false" entryTtl="0" expirationInterval="0" />
+    <flow name="TMF632-Party_Management-v5.0.0.oas-main">
+        <http:listener config-ref="TMF632-Party_Management-v5.0.0.oas-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="TMF632-Party_Management-v5.0.0.oas-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="TMF632-Party_Management-v5.0.0.oas-console">
+        <http:listener config-ref="TMF632-Party_Management-v5.0.0.oas-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="TMF632-Party_Management-v5.0.0.oas-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="delete:\hub\(id):TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\hub\(id):TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\individual\(id):TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\individual\(id):TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="delete:\organization\(id):TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\organization\(id):TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="patch:\individual\(id):application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "42",
+  href: "https://serverRoot/tmf-api/party/v5/individual/42",
+  "@type": "Individual",
+  "@baseType": "Party",
+  gender: "female",
+  countryOfBirth: "United States",
+  nationality: "American",
+  maritalStatus: "divorced",
+  birthDate: "1967-09-26T05:00:00.246Z",
+  givenName: "Jane",
+  preferredGivenName: "Lamborgizzia",
+  familyName: "Lamborgizzia",
+  legalName: "Smith",
+  middleName: "JL",
+  fullName: "Jane Smith ep Lamborgizzia",
+  formattedName: "Jane Smith ep Lamborgizzia",
+  status: "validated",
+  externalReference: [
+    {
+      name: "http://facebook.com/17263635",
+      externalIdentifierType: "facebookId",
+      "@type": "ExternalIdentifier"
+    }, 
+    {
+      name: "http://google.com/17263635",
+      externalIdentifierType: "googleId",
+      "@type": "ExternalIdentifier"
+    }
+  ],
+  partyCharacteristic: [
+    {
+      name: "hobby",
+      value: [
+        "Modern Jazz", 
+        "Cinema"
+      ],
+      valueType: "array",
+      "@type": "StringArrayCharacteristic"
+    }, 
+    {
+      name: "childrenNumber",
+      value: 1,
+      valueType: "number",
+      "@type": "IntegerCharacteristic"
+    }
+  ],
+  otherName: [
+    {
+      "@type": "OtherNameIndividual",
+      givenName: "Jane",
+      familyName: "Smith",
+      validFor: {
+        startDateTime: "1967-09-26T00:00:00.246Z",
+        endDateTime: "2015-06-15T00:00:00.246Z"
+      }
+    }
+  ],
+  individualIdentification: [
+    {
+      "@type": "IndividualIdentification",
+      identificationType: "passport",
+      identificationId: "51DD1234",
+      issuingAuthority: "US Government",
+      issuingDate: "2017-10-22T07:49:25.246Z",
+      validFor: {
+        startDateTime: "2017-10-22T07:49:25.246Z",
+        endDateTime: "2027-10-21T07:49:25.246Z"
+      },
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "passportCopy",
+        name: "PassportCopy321.pdf",
+        description: "Scanned copy of the passport",
+        mimeType: "application/pdf",
+        url: "http://DocumentManager/321/PassportCopy321.pdf"
+      }
+    }
+  ],
+  taxExemptionCertificate: [
+    {
+      "@type": "TaxExemptionCertificate",
+      id: "1",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      },
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinitionRef",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-566655.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "https://mycsp.com:8080/DocumentManager/666/TaxExemptionCertificate-566655.pdf"
+      }
+    }
+  ],
+  creditRating: [
+    {
+      "@type": "CreditRating",
+      creditAgencyName: "Experian",
+      creditAgencyType: "externalAgency",
+      ratingReference: "ref123",
+      ratingScore: 680,
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  relatedParty: [
+    {
+      role: "employer",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        id: "128",
+        href: "https://serverRoot/tmf-api/party/v5/organization/128",
+        name: "Coffee Do Brazil Fair Trade Marketing Department",
+        "@type": "PartyRef",
+        "@referredType": "Organization"
+      }
+    }
+  ],
+  contactMedium: [
+    {
+      preferred: true,
+      mediumType: "email",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "EmailContactMedium",
+      emailAddress: "jane.lamborgizzia@gmail.com"
+    }, 
+    {
+      preferred: false,
+      mediumType: "postalAddress",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "GeographicAddressContactMedium",
+      city: "Morristown",
+      country: "USA",
+      postCode: 7960,
+      stateOrProvince: "New Jersey",
+      street1: "240 Headquarters Plazza",
+      street2: "East Tower - 10th Floor"
+    }
+  ],
+  disability: [
+    {
+      disabilityCode: "BLD",
+      disabilityName: "Blind",
+      validFor: {
+        startDateTime: "1967-09-26T07:49:25.246Z"
+      }
+    }
+  ],
+  languageAbility: [
+    {
+      languageCode: "FR",
+      languageName: "French",
+      isFavouriteLanguage: true,
+      writingProficiency: "advanced",
+      readingProficiency: "advanced",
+      speakingProficiency: "intermediate",
+      listeningProficiency: "intermediate",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      languageCode: "SP",
+      languageName: "Spanish",
+      isFavouriteLanguage: false,
+      writingProficiency: "scholar",
+      readingProficiency: "scholar",
+      speakingProficiency: "scholar",
+      listeningProficiency: "scholar",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  skill: [
+    {
+      skillCode: "SK001",
+      skillName: "marketing",
+      evaluatedLevel: "Advanced",
+      comment: "Ten years experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      skillCode: "SK002",
+      skillName: "Project Management",
+      evaluatedLevel: "newbie",
+      comment: "First work experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\individual\(id):application\json-patch+json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "42",
+  href: "https://serverRoot/tmf-api/party/v5/individual/42",
+  "@type": "Individual",
+  "@baseType": "Party",
+  gender: "female",
+  countryOfBirth: "United States",
+  nationality: "American",
+  maritalStatus: "divorced",
+  birthDate: "1967-09-26T05:00:00.246Z",
+  givenName: "Jane",
+  preferredGivenName: "Lamborgizzia",
+  familyName: "Lamborgizzia",
+  legalName: "Smith",
+  middleName: "JL",
+  fullName: "Jane Smith ep Lamborgizzia",
+  formattedName: "Jane Smith ep Lamborgizzia",
+  status: "validated",
+  externalReference: [
+    {
+      name: "http://facebook.com/17263635",
+      externalIdentifierType: "facebookId",
+      "@type": "ExternalIdentifier"
+    }, 
+    {
+      name: "http://google.com/17263635",
+      externalIdentifierType: "googleId",
+      "@type": "ExternalIdentifier"
+    }
+  ],
+  partyCharacteristic: [
+    {
+      name: "hobby",
+      value: [
+        "Modern Jazz", 
+        "Cinema"
+      ],
+      valueType: "array",
+      "@type": "StringArrayCharacteristic"
+    }, 
+    {
+      name: "childrenNumber",
+      value: 1,
+      valueType: "number",
+      "@type": "IntegerCharacteristic"
+    }
+  ],
+  otherName: [
+    {
+      "@type": "OtherNameIndividual",
+      givenName: "Jane",
+      familyName: "Smith",
+      validFor: {
+        startDateTime: "1967-09-26T00:00:00.246Z",
+        endDateTime: "2015-06-15T00:00:00.246Z"
+      }
+    }
+  ],
+  individualIdentification: [
+    {
+      "@type": "IndividualIdentification",
+      identificationType: "passport",
+      identificationId: "51DD1234",
+      issuingAuthority: "US Government",
+      issuingDate: "2017-10-22T07:49:25.246Z",
+      validFor: {
+        startDateTime: "2017-10-22T07:49:25.246Z",
+        endDateTime: "2027-10-21T07:49:25.246Z"
+      },
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "passportCopy",
+        name: "PassportCopy321.pdf",
+        description: "Scanned copy of the passport",
+        mimeType: "application/pdf",
+        url: "http://DocumentManager/321/PassportCopy321.pdf"
+      }
+    }
+  ],
+  taxExemptionCertificate: [
+    {
+      "@type": "TaxExemptionCertificate",
+      id: "1",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      },
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinitionRef",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-566655.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "https://mycsp.com:8080/DocumentManager/666/TaxExemptionCertificate-566655.pdf"
+      }
+    }
+  ],
+  creditRating: [
+    {
+      "@type": "CreditRating",
+      creditAgencyName: "Experian",
+      creditAgencyType: "externalAgency",
+      ratingReference: "ref123",
+      ratingScore: 680,
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  relatedParty: [
+    {
+      role: "employer",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        id: "128",
+        href: "https://serverRoot/tmf-api/party/v5/organization/128",
+        name: "Coffee Do Brazil Fair Trade Marketing Department",
+        "@type": "PartyRef",
+        "@referredType": "Organization"
+      }
+    }
+  ],
+  contactMedium: [
+    {
+      preferred: true,
+      mediumType: "email",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "EmailContactMedium",
+      emailAddress: "jane.lamborgizzia@gmail.com"
+    }, 
+    {
+      preferred: false,
+      mediumType: "postalAddress",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "GeographicAddressContactMedium",
+      city: "Morristown",
+      country: "USA",
+      postCode: 7960,
+      stateOrProvince: "New Jersey",
+      street1: "240 Headquarters Plazza",
+      street2: "East Tower - 10th Floor"
+    }
+  ],
+  disability: [
+    {
+      disabilityCode: "BLD",
+      disabilityName: "Blind",
+      validFor: {
+        startDateTime: "1967-09-26T07:49:25.246Z"
+      }
+    }
+  ],
+  languageAbility: [
+    {
+      languageCode: "FR",
+      languageName: "French",
+      isFavouriteLanguage: true,
+      writingProficiency: "advanced",
+      readingProficiency: "advanced",
+      speakingProficiency: "intermediate",
+      listeningProficiency: "intermediate",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      languageCode: "SP",
+      languageName: "Spanish",
+      isFavouriteLanguage: false,
+      writingProficiency: "scholar",
+      readingProficiency: "scholar",
+      speakingProficiency: "scholar",
+      listeningProficiency: "scholar",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  skill: [
+    {
+      skillCode: "SK001",
+      skillName: "marketing",
+      evaluatedLevel: "Advanced",
+      comment: "Ten years experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      skillCode: "SK002",
+      skillName: "Project Management",
+      evaluatedLevel: "newbie",
+      comment: "First work experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\individual\(id):application\json-patch-query+json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "42",
+  href: "https://serverRoot/tmf-api/party/v5/individual/42",
+  "@type": "Individual",
+  "@baseType": "Party",
+  gender: "female",
+  countryOfBirth: "United States",
+  nationality: "American",
+  maritalStatus: "divorced",
+  birthDate: "1967-09-26T05:00:00.246Z",
+  givenName: "Jane",
+  preferredGivenName: "Lamborgizzia",
+  familyName: "Lamborgizzia",
+  legalName: "Smith",
+  middleName: "JL",
+  fullName: "Jane Smith ep Lamborgizzia",
+  formattedName: "Jane Smith ep Lamborgizzia",
+  status: "validated",
+  externalReference: [
+    {
+      name: "http://facebook.com/17263635",
+      externalIdentifierType: "facebookId",
+      "@type": "ExternalIdentifier"
+    }, 
+    {
+      name: "http://google.com/17263635",
+      externalIdentifierType: "googleId",
+      "@type": "ExternalIdentifier"
+    }
+  ],
+  partyCharacteristic: [
+    {
+      name: "hobby",
+      value: [
+        "Modern Jazz", 
+        "Cinema"
+      ],
+      valueType: "array",
+      "@type": "StringArrayCharacteristic"
+    }, 
+    {
+      name: "childrenNumber",
+      value: 1,
+      valueType: "number",
+      "@type": "IntegerCharacteristic"
+    }
+  ],
+  otherName: [
+    {
+      "@type": "OtherNameIndividual",
+      givenName: "Jane",
+      familyName: "Smith",
+      validFor: {
+        startDateTime: "1967-09-26T00:00:00.246Z",
+        endDateTime: "2015-06-15T00:00:00.246Z"
+      }
+    }
+  ],
+  individualIdentification: [
+    {
+      "@type": "IndividualIdentification",
+      identificationType: "passport",
+      identificationId: "51DD1234",
+      issuingAuthority: "US Government",
+      issuingDate: "2017-10-22T07:49:25.246Z",
+      validFor: {
+        startDateTime: "2017-10-22T07:49:25.246Z",
+        endDateTime: "2027-10-21T07:49:25.246Z"
+      },
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "passportCopy",
+        name: "PassportCopy321.pdf",
+        description: "Scanned copy of the passport",
+        mimeType: "application/pdf",
+        url: "http://DocumentManager/321/PassportCopy321.pdf"
+      }
+    }
+  ],
+  taxExemptionCertificate: [
+    {
+      "@type": "TaxExemptionCertificate",
+      id: "1",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      },
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinitionRef",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-566655.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "https://mycsp.com:8080/DocumentManager/666/TaxExemptionCertificate-566655.pdf"
+      }
+    }
+  ],
+  creditRating: [
+    {
+      "@type": "CreditRating",
+      creditAgencyName: "Experian",
+      creditAgencyType: "externalAgency",
+      ratingReference: "ref123",
+      ratingScore: 680,
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  relatedParty: [
+    {
+      role: "employer",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        id: "128",
+        href: "https://serverRoot/tmf-api/party/v5/organization/128",
+        name: "Coffee Do Brazil Fair Trade Marketing Department",
+        "@type": "PartyRef",
+        "@referredType": "Organization"
+      }
+    }
+  ],
+  contactMedium: [
+    {
+      preferred: true,
+      mediumType: "email",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "EmailContactMedium",
+      emailAddress: "jane.lamborgizzia@gmail.com"
+    }, 
+    {
+      preferred: false,
+      mediumType: "postalAddress",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "GeographicAddressContactMedium",
+      city: "Morristown",
+      country: "USA",
+      postCode: 7960,
+      stateOrProvince: "New Jersey",
+      street1: "240 Headquarters Plazza",
+      street2: "East Tower - 10th Floor"
+    }
+  ],
+  disability: [
+    {
+      disabilityCode: "BLD",
+      disabilityName: "Blind",
+      validFor: {
+        startDateTime: "1967-09-26T07:49:25.246Z"
+      }
+    }
+  ],
+  languageAbility: [
+    {
+      languageCode: "FR",
+      languageName: "French",
+      isFavouriteLanguage: true,
+      writingProficiency: "advanced",
+      readingProficiency: "advanced",
+      speakingProficiency: "intermediate",
+      listeningProficiency: "intermediate",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      languageCode: "SP",
+      languageName: "Spanish",
+      isFavouriteLanguage: false,
+      writingProficiency: "scholar",
+      readingProficiency: "scholar",
+      speakingProficiency: "scholar",
+      listeningProficiency: "scholar",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  skill: [
+    {
+      skillCode: "SK001",
+      skillName: "marketing",
+      evaluatedLevel: "Advanced",
+      comment: "Ten years experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      skillCode: "SK002",
+      skillName: "Project Management",
+      evaluatedLevel: "newbie",
+      comment: "First work experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\individual\(id):application\merge-patch+json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "42",
+  href: "https://serverRoot/tmf-api/party/v5/individual/42",
+  "@type": "Individual",
+  "@baseType": "Party",
+  gender: "female",
+  countryOfBirth: "United States",
+  nationality: "American",
+  maritalStatus: "divorced",
+  birthDate: "1967-09-26T05:00:00.246Z",
+  givenName: "Jane",
+  preferredGivenName: "Lamborgizzia",
+  familyName: "Lamborgizzia",
+  legalName: "Smith",
+  middleName: "JL",
+  fullName: "Jane Smith ep Lamborgizzia",
+  formattedName: "Jane Smith ep Lamborgizzia",
+  status: "validated",
+  externalReference: [
+    {
+      name: "http://facebook.com/17263635",
+      externalIdentifierType: "facebookId",
+      "@type": "ExternalIdentifier"
+    }, 
+    {
+      name: "http://google.com/17263635",
+      externalIdentifierType: "googleId",
+      "@type": "ExternalIdentifier"
+    }
+  ],
+  partyCharacteristic: [
+    {
+      name: "hobby",
+      value: [
+        "Modern Jazz", 
+        "Cinema"
+      ],
+      valueType: "array",
+      "@type": "StringArrayCharacteristic"
+    }, 
+    {
+      name: "childrenNumber",
+      value: 1,
+      valueType: "number",
+      "@type": "IntegerCharacteristic"
+    }
+  ],
+  otherName: [
+    {
+      "@type": "OtherNameIndividual",
+      givenName: "Jane",
+      familyName: "Smith",
+      validFor: {
+        startDateTime: "1967-09-26T00:00:00.246Z",
+        endDateTime: "2015-06-15T00:00:00.246Z"
+      }
+    }
+  ],
+  individualIdentification: [
+    {
+      "@type": "IndividualIdentification",
+      identificationType: "passport",
+      identificationId: "51DD1234",
+      issuingAuthority: "US Government",
+      issuingDate: "2017-10-22T07:49:25.246Z",
+      validFor: {
+        startDateTime: "2017-10-22T07:49:25.246Z",
+        endDateTime: "2027-10-21T07:49:25.246Z"
+      },
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "passportCopy",
+        name: "PassportCopy321.pdf",
+        description: "Scanned copy of the passport",
+        mimeType: "application/pdf",
+        url: "http://DocumentManager/321/PassportCopy321.pdf"
+      }
+    }
+  ],
+  taxExemptionCertificate: [
+    {
+      "@type": "TaxExemptionCertificate",
+      id: "1",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      },
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinitionRef",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-566655.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "https://mycsp.com:8080/DocumentManager/666/TaxExemptionCertificate-566655.pdf"
+      }
+    }
+  ],
+  creditRating: [
+    {
+      "@type": "CreditRating",
+      creditAgencyName: "Experian",
+      creditAgencyType: "externalAgency",
+      ratingReference: "ref123",
+      ratingScore: 680,
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  relatedParty: [
+    {
+      role: "employer",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        id: "128",
+        href: "https://serverRoot/tmf-api/party/v5/organization/128",
+        name: "Coffee Do Brazil Fair Trade Marketing Department",
+        "@type": "PartyRef",
+        "@referredType": "Organization"
+      }
+    }
+  ],
+  contactMedium: [
+    {
+      preferred: true,
+      mediumType: "email",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "EmailContactMedium",
+      emailAddress: "jane.lamborgizzia@gmail.com"
+    }, 
+    {
+      preferred: false,
+      mediumType: "postalAddress",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "GeographicAddressContactMedium",
+      city: "Morristown",
+      country: "USA",
+      postCode: 7960,
+      stateOrProvince: "New Jersey",
+      street1: "240 Headquarters Plazza",
+      street2: "East Tower - 10th Floor"
+    }
+  ],
+  disability: [
+    {
+      disabilityCode: "BLD",
+      disabilityName: "Blind",
+      validFor: {
+        startDateTime: "1967-09-26T07:49:25.246Z"
+      }
+    }
+  ],
+  languageAbility: [
+    {
+      languageCode: "FR",
+      languageName: "French",
+      isFavouriteLanguage: true,
+      writingProficiency: "advanced",
+      readingProficiency: "advanced",
+      speakingProficiency: "intermediate",
+      listeningProficiency: "intermediate",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      languageCode: "SP",
+      languageName: "Spanish",
+      isFavouriteLanguage: false,
+      writingProficiency: "scholar",
+      readingProficiency: "scholar",
+      speakingProficiency: "scholar",
+      listeningProficiency: "scholar",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  skill: [
+    {
+      skillCode: "SK001",
+      skillName: "marketing",
+      evaluatedLevel: "Advanced",
+      comment: "Ten years experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      skillCode: "SK002",
+      skillName: "Project Management",
+      evaluatedLevel: "newbie",
+      comment: "First work experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\organization\(id):application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="patchOrganizationLegalEntity" />
+    </flow>
+    <flow name="patch:\organization\(id):application\json-patch+json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="patchOrganizationLegalEntity" />
+    </flow>
+    <flow name="patch:\organization\(id):application\json-patch-query+json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="patchOrganizationLegalEntity" />
+    </flow>
+    <flow name="patch:\organization\(id):application\merge-patch+json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="patchOrganizationLegalEntity" />
+    </flow>
+    <flow name="get:\individual:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "42",
+    href: "https://serverRoot/tmf-api/party/v5/individual/42",
+    "@type": "Individual",
+    "@baseType": "Party",
+    givenName: "Jane",
+    familyName: "Lamborgizzia"
+  }, 
+  {
+    id: "52",
+    href: "https://serverRoot/tmf-api/party/v5/individual/52",
+    "@type": "Individual",
+    "@baseType": "Party",
+    givenName: "Paul",
+    familyName: "Newman"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\individual\(id):TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "42",
+  href: "https://serverRoot/tmf-api/party/v5/individual/42",
+  "@type": "Individual",
+  "@baseType": "Party",
+  gender: "female",
+  countryOfBirth: "United States",
+  nationality: "American",
+  maritalStatus: "married",
+  birthDate: "1967-09-26T05:00:00.246Z",
+  givenName: "Jane",
+  preferredGivenName: "Lamborgizzia",
+  familyName: "Lamborgizzia",
+  legalName: "Smith",
+  middleName: "JL",
+  fullName: "Jane Smith ep Lamborgizzia",
+  formattedName: "Jane Smith ep Lamborgizzia",
+  status: "validated",
+  externalReference: [
+    {
+      name: "http://facebook.com/17263635",
+      externalIdentifierType: "facebookId",
+      "@type": "ExternalIdentifier"
+    }, 
+    {
+      name: "http://google.com/17263635",
+      externalIdentifierType: "googleId",
+      "@type": "ExternalIdentifier"
+    }
+  ],
+  partyCharacteristic: [
+    {
+      name: "hobby",
+      value: [
+        "Modern Jazz", 
+        "Cinema"
+      ],
+      valueType: "array",
+      "@type": "StringArrayCharacteristic"
+    }
+  ],
+  otherName: [
+    {
+      "@type": "OtherNameIndividual",
+      givenName: "Jane",
+      familyName: "Smith",
+      validFor: {
+        startDateTime: "1967-09-26T00:00:00.246Z",
+        endDateTime: "2015-06-15T00:00:00.246Z"
+      }
+    }
+  ],
+  individualIdentification: [
+    {
+      "@type": "IndividualIdentification",
+      identificationType: "passport",
+      identificationId: "51DD1234",
+      issuingAuthority: "US Government",
+      issuingDate: "2017-10-22T07:49:25.246Z",
+      validFor: {
+        startDateTime: "2017-10-22T07:49:25.246Z",
+        endDateTime: "2027-10-21T07:49:25.246Z"
+      },
+      attachment: {
+        "@type": "Attachment",
+        id: "6662326757667",
+        href: "https://serverRoot/tmf-api/document/v5/attachment/6662326757667",
+        attachmentType: "passportCopy",
+        name: "PassportCopy321.pdf",
+        description: "Scanned copy of the passport",
+        mimeType: "application/pdf",
+        url: "http://DocumentManager/321/PassportCopy321.pdf"
+      }
+    }
+  ],
+  taxExemptionCertificate: [
+    {
+      "@type": "TaxExemptionCertificate",
+      id: "1",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      },
+      certificateNumber: "98765432345",
+      issuingJurisdiction: "USA",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinitionRef",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        id: "5565734535",
+        href: "https://serverRoot/tmf-api/document/v5/attachment/5565734535",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-566655.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "https://mycsp.com:8080/DocumentManager/666/TaxExemptionCertificate-566655.pdf"
+      }
+    }
+  ],
+  creditRating: [
+    {
+      "@type": "CreditRating",
+      creditAgencyName: "Experian",
+      creditAgencyType: "externalAgency",
+      ratingReference: "ref123",
+      ratingScore: 680,
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  relatedParty: [
+    {
+      role: "employer",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        id: "128",
+        href: "https://serverRoot/tmf-api/party/v5/organization/128",
+        name: "Coffee Do Brazil Fair Trade Marketing Department",
+        "@type": "PartyRef",
+        "@referredType": "Organization"
+      }
+    }
+  ],
+  contactMedium: [
+    {
+      preferred: true,
+      mediumType: "email",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "EmailContactMedium",
+      emailAddress: "jane.lamborgizzia@gmail.com"
+    }, 
+    {
+      preferred: false,
+      mediumType: "postalAddress",
+      validFor: {
+        startDateTime: "2017-03-15T07:49:25.246Z"
+      },
+      "@type": "GeographicAddressContactMedium",
+      city: "Morristown",
+      country: "USA",
+      postCode: 7960,
+      stateOrProvince: "New Jersey",
+      street1: "240 Headquarters Plazza",
+      street2: "East Tower - 10th Floor"
+    }
+  ],
+  disability: [
+    {
+      disabilityCode: "BLD",
+      disabilityName: "Blind",
+      validFor: {
+        startDateTime: "1967-09-26T07:49:25.246Z"
+      }
+    }
+  ],
+  languageAbility: [
+    {
+      languageCode: "FR",
+      languageName: "French",
+      isFavouriteLanguage: true,
+      writingProficiency: "advanced",
+      readingProficiency: "advanced",
+      speakingProficiency: "intermediate",
+      listeningProficiency: "intermediate",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      languageCode: "SP",
+      languageName: "Spanish",
+      isFavouriteLanguage: false,
+      writingProficiency: "scholar",
+      readingProficiency: "scholar",
+      speakingProficiency: "scholar",
+      listeningProficiency: "scholar",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ],
+  skill: [
+    {
+      skillCode: "SK001",
+      skillName: "marketing",
+      evaluatedLevel: "Advanced",
+      comment: "Ten years experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }, 
+    {
+      skillCode: "SK002",
+      skillName: "Project Management",
+      evaluatedLevel: "newbie",
+      comment: "First work experience",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\organization:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "128",
+    href: "https://serverRoot/tmf-api/party/v5/organization/128",
+    "@type": "Organization",
+    "@baseType": "Party",
+    name: "Coffee Do Brazil Fair Trade"
+  }, 
+  {
+    id: "1882",
+    href: "https://serverRoot/tmf-api/party/v5/organization/1882",
+    "@type": "Organization",
+    "@baseType": "Party",
+    name: "Joe's Pizza"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\organization\(id):TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "128",
+  href: "https://serverRoot/tmf-api/party/v5/organization/128",
+  "@type": "Organization",
+  "@baseType": "Party",
+  isLegalEntity: true,
+  isHeadOffice: true,
+  organizationType: "company",
+  existsDuring: {
+    startDateTime: "2015-10-22T08:31:52.026Z"
+  },
+  name: "Coffee Do Brazil",
+  tradingName: "Coffee Do Brazil Fair Trade",
+  nameType: "inc",
+  status: "validated",
+  externalReference: [
+    {
+      name: "http://coffeedobrazil.com",
+      externalIdentifierType: "internetSite",
+      "@type": "ExternalIdentifier"
+    }
+  ],
+  partyCharacteristic: [
+    {
+      name: "number of employees",
+      value: 125,
+      valueType: "number",
+      "@type": "IntegerCharacteristic"
+    }, 
+    {
+      name: "market segment",
+      value: "Food wholesale",
+      valueType: "string",
+      "@type": "StringCharacteristic"
+    }
+  ],
+  otherName: [
+    {
+      "@type": "OtherNameOrganization",
+      nameType: "inc",
+      tradingName: "General Coffee",
+      validFor: {
+        startDateTime: "2015-10-22T08:31:52.026Z",
+        endDateTime: "2017-10-22T08:31:52.026Z"
+      }
+    }
+  ],
+  organizationIdentification: [
+    {
+      "@type": "OrganizationIdentification",
+      identificationType: "commercialRegistration",
+      identificationId: "12345678",
+      issuingAuthority: "US Government",
+      issuingDate: "2015-10-22T08:31:52.028Z",
+      validFor: {
+        startDateTime: "2015-10-22T08:31:52.028Z"
+      },
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "documentCopy",
+        name: "RegistrationCertificate421.pdf",
+        description: "Scanned copy of the registration certificate",
+        mimeType: "application/pdf",
+        url: "http://DocumentManager/421/RegistrationCertificate421.pdf"
+      }
+    }
+  ],
+  taxExemptionCertificate: [
+    {
+      "@type": "TaxExemptionCertificate",
+      id: "1",
+      validFor: {
+        startDateTime: "2018-10-22T07:49:25.246Z"
+      },
+      certificateNumber: "9875755432345",
+      issuingJurisdiction: "USA",
+      reason: "Voluntary Body",
+      taxDefinition: [
+        {
+          "@type": "TaxDefinitionRef",
+          id: "96",
+          name: "Value Added Tax",
+          taxType: "federalVat"
+        }
+      ],
+      attachment: {
+        "@type": "Attachment",
+        attachmentType: "taxExemptionCertificate",
+        name: "TaxExemptionCertificate-233322.pdf",
+        description: "Electronic version of the tax exemption certificate",
+        mimeType: "application/pdf",
+        url: "https://mycsp.com:8080/DocumentManager/666/TaxExemptionCertificate-233322.pdf"
+      }
+    }
+  ],
+  creditRating: [
+    {
+      "@type": "CreditRating",
+      creditAgencyName: "Experian",
+      creditAgencyType: "externalAgency",
+      ratingReference: "ref456",
+      ratingScore: 400,
+      validFor: {
+        startDateTime: "2018-10-22T08:31:52.028Z"
+      }
+    }
+  ],
+  relatedParty: [
+    {
+      role: "director",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        id: "54",
+        href: "https://serverRoot/tmf-api/party/v5/individual/54",
+        name: "Carlos Mafalda",
+        "@type": "PartyRef",
+        "@referredType": "Individual"
+      }
+    }, 
+    {
+      role: "employee",
+      "@type": "RelatedPartyRefOrPartyRoleRef",
+      partyOrPartyRole: {
+        id: "42",
+        href: "https://serverRoot/tmf-api/party/v5/individual/42",
+        name: "Jane Lamborgizzia",
+        "@type": "PartyRef",
+        "@referredType": "Individual"
+      }
+    }
+  ],
+  contactMedium: [
+    {
+      preferred: true,
+      mediumType: "email",
+      validFor: {
+        startDateTime: "2018-10-22T08:31:52.028Z"
+      },
+      "@type": "EmailContactMedium",
+      emailAddress: "jane.lamborgizzia@coffeedobrazil.com"
+    }, 
+    {
+      preferred: false,
+      mediumType: "postalAddress",
+      validFor: {
+        startDateTime: "2018-10-22T08:31:52.028Z"
+      },
+      "@type": "GeographicAddressContactMedium",
+      city: "Morristown",
+      country: "USA",
+      postCode: 7960,
+      stateOrProvince: "New Jersey",
+      street1: "240 Headquarters Plazza",
+      street2: "East Tower 10th Floor"
+    }
+  ],
+  organizationParentRelationship: {
+    "@type": "OrganizationParentRelationship",
+    relationshipType: "juridical",
+    organization: {
+      "@type": "OrganizationRef",
+      id: "800",
+      href: "https://serverRoot/tmf-api/party/v5/organization/800"
+    }
+  },
+  organizationChildRelationship: [
+    {
+      "@type": "OrganizationChildRelationship",
+      relationshipType: "juridical",
+      organization: {
+        "@type": "OrganizationRef",
+        id: "149",
+        href: "https://serverRoot/tmf-api/party/v5/organization/149"
+      }
+    }, 
+    {
+      "@type": "OrganizationChildRelationship",
+      relationshipType: "juridical",
+      organization: {
+        "@type": "OrganizationRef",
+        id: "150",
+        href: "https://serverRoot/tmf-api/party/v5/organization/150"
+      }
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\hub:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\hub:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\individual:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "42",
+  href: "https://serverRoot/tmf-api/party/v5/individual/42",
+  "@type": "Individual",
+  "@baseType": "Party",
+  givenName: "Jane",
+  familyName: "Lamborgizzia",
+  status: "initialized"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\listener\individualAttributeValueChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\individualAttributeValueChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\individualCreateEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\individualCreateEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\individualDeleteEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\individualDeleteEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\individualStateChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\individualStateChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\organizationAttributeValueChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\organizationAttributeValueChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\organizationCreateEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\organizationCreateEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\organizationDeleteEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\organizationDeleteEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\listener\organizationStateChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <logger level="INFO" message="post:\listener\organizationStateChangeEvent:application\json:TMF632-Party_Management-v5.0.0.oas-config" />
+    </flow>
+    <flow name="post:\organization:application\json:TMF632-Party_Management-v5.0.0.oas-config">
+        <set-variable variableName="requestPayload" value="#[payload]" />
+        <ee:transform doc:name="Extract legal entity fields">
+            <ee:variables>
+                <ee:set-variable variableName="companyName"><![CDATA[%dw 2.0
+output application/java
+---
+((vars.requestPayload.name default vars.requestPayload.companyName default "") as String)]]></ee:set-variable>
+                <ee:set-variable variableName="registrationNumber"><![CDATA[%dw 2.0
+output application/java
+---
+(
+  vars.requestPayload.organizationIdentification[0].identificationId
+    default vars.requestPayload.registrationNumber
+    default ""
+) as String]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+
+        <choice>
+            <when expression="#[isBlank(vars.companyName) or isBlank(vars.registrationNumber)]">
+                <set-variable variableName="httpStatus" value="400" />
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]' />
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "MISSING_REQUIRED_FIELDS",
+  message: "name (company name) and organizationIdentification[0].identificationId (registration number) are mandatory",
+  status: 400
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <os:retrieve key="#['reg::' ++ vars.registrationNumber]" target="existingPartyId" objectStore="partyObjectStore">
+                    <os:default-value><![CDATA[#[null]]]></os:default-value>
+                </os:retrieve>
+                <choice>
+                    <when expression="#[vars.existingPartyId != null]">
+                        <set-variable variableName="httpStatus" value="409" />
+                        <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]' />
+                        <ee:transform>
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "LEGAL_ENTITY_DUPLICATE_REGISTRATION",
+  message: "A legal entity with this registration number already exists",
+  registrationNumber: vars.registrationNumber,
+  existingPartyId: vars.existingPartyId,
+  status: 409
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <os:retrieve key="partyCounter" target="partyCounter" objectStore="partyObjectStore">
+                            <os:default-value><![CDATA[#[1000]]]></os:default-value>
+                        </os:retrieve>
+                        <set-variable variableName="partyId" value="#[(vars.partyCounter as Number) + 1 as String]" />
+                        <os:store key="partyCounter" failIfPresent="false" objectStore="partyObjectStore">
+                            <os:value><![CDATA[#[vars.partyId as Number]]]></os:value>
+                        </os:store>
+
+                        <ee:transform doc:name="Build TMF632 organization response">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var nowTs = now() as String
+var legalAddress = vars.requestPayload.legalAddress default {}
+var representative = vars.requestPayload.representative default {}
+var enrichmentMode = p("legal.entity.enrichment.mode") default "none"
+---
+{
+  id: vars.partyId,
+  href: "http://localhost:8081/api/organization/" ++ vars.partyId,
+  "@type": "Organization",
+  "@baseType": "Party",
+  isLegalEntity: true,
+  name: vars.companyName,
+  status: "created",
+  organizationIdentification: [
+    {
+      "@type": "OrganizationIdentification",
+      identificationType: "commercialRegistration",
+      identificationId: vars.registrationNumber
+    }
+  ],
+  contactMedium: if (isEmpty(legalAddress)) []
+    else [
+      {
+        "@type": "GeographicAddressContactMedium",
+        mediumType: "postalAddress",
+        street1: legalAddress.street1 default null,
+        street2: legalAddress.street2 default null,
+        city: legalAddress.city default null,
+        stateOrProvince: legalAddress.stateOrProvince default null,
+        postCode: legalAddress.postCode default null,
+        country: legalAddress.country default null
+      }
+    ],
+  relatedParty: if (isEmpty(representative)) []
+    else [
+      {
+        role: representative.role default "representative",
+        "@type": "RelatedPartyRefOrPartyRoleRef",
+        partyOrPartyRole: {
+          "@type": "PartyRef",
+          name: representative.fullName default representative.name default "N/A",
+          "@referredType": "Individual"
+        }
+      }
+    ],
+  externalReference: if ((p("legal.entity.enrichment.mode") default "none") == "request")
+    [
+      {
+        "@type": "ExternalIdentifier",
+        externalIdentifierType: "businessRegister",
+        name: (vars.requestPayload.businessRegisterReference.recordId
+          default vars.requestPayload.businessRegisterData.vatNumber
+          default vars.requestPayload.businessRegisterReference.source
+          default "external-register-link")
+      }
+    ]
+    else [],
+  creationDate: nowTs,
+  lastUpdate: nowTs
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+
+                        <os:store key="#['party::' ++ vars.partyId]" failIfPresent="true" objectStore="partyObjectStore">
+                            <os:value><![CDATA[#[payload]]]></os:value>
+                        </os:store>
+                        <os:store key="#['reg::' ++ vars.registrationNumber]" failIfPresent="true" objectStore="partyObjectStore">
+                            <os:value><![CDATA[#[vars.partyId]]]></os:value>
+                        </os:store>
+
+                        <set-variable variableName="eventType" value="partyCreateEvent" />
+                        <set-variable variableName="partyForEvent" value="#[payload]" />
+                        <flow-ref name="publishPartyWebhookEvent" />
+                        <set-variable variableName="httpStatus" value="201" />
+                        <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json","Location":"/api/organization/" ++ vars.partyId}]' />
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+    <sub-flow name="patchOrganizationLegalEntity">
+        <set-variable variableName="patchPayload" value="#[payload]" />
+        <os:retrieve key="#['party::' ++ vars.id]" target="existingParty" objectStore="partyObjectStore">
+            <os:default-value><![CDATA[#[null]]]></os:default-value>
+        </os:retrieve>
+        <choice>
+            <when expression="#[vars.existingParty == null]">
+                <set-variable variableName="httpStatus" value="404" />
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]' />
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "PARTY_NOT_FOUND",
+  message: "No legal entity exists with id " ++ vars.id,
+  status: 404
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(vars.existingParty - "id" - "href" - "organizationIdentification" - "creationDate")
+    ++ vars.patchPayload
+    ++ {
+      id: vars.existingParty.id,
+      href: vars.existingParty.href,
+      organizationIdentification: vars.existingParty.organizationIdentification,
+      creationDate: vars.existingParty.creationDate,
+      lastUpdate: now() as String
+    }]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <os:store key="#['party::' ++ vars.id]" failIfPresent="false" objectStore="partyObjectStore">
+                    <os:value><![CDATA[#[payload]]]></os:value>
+                </os:store>
+                <set-variable variableName="eventType" value="partyAttributeValueChangeEvent" />
+                <set-variable variableName="partyForEvent" value="#[payload]" />
+                <flow-ref name="publishPartyWebhookEvent" />
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]' />
+            </otherwise>
+        </choice>
+    </sub-flow>
+    <sub-flow name="publishPartyWebhookEvent">
+        <choice>
+            <when expression="#[(p('webhook.enabled') default 'false') == 'true']">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var party = vars.partyForEvent default {}
+---
+{
+  eventType: vars.eventType default "partyEvent",
+  eventTime: now() as String,
+  event: {
+    id: party.id default null,
+    href: party.href default null,
+    "@referredType": "Party",
+    party: party
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <try>
+                    <http:request method="POST" config-ref="partyWebhookRequestConfig" path="${webhook.path}">
+                        <http:headers><![CDATA[#[{"Content-Type":"application/json"}]]]></http:headers>
+                    </http:request>
+                    <error-handler>
+                        <on-error-continue logException="true">
+                            <logger level="WARN" message="Party webhook notification failed but API response is not blocked." />
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+            </when>
+        </choice>
+    </sub-flow>
+</mule>

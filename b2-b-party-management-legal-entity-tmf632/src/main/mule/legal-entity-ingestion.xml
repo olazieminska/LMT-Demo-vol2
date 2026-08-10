@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:os="http://www.mulesoft.org/schema/mule/os"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+      http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+      http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+
+    <configuration-properties file="legal-entity-ingestion.properties"/>
+
+    <http:listener-config name="legalEntityIngestionListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8082"/>
+    </http:listener-config>
+
+    <http:request-config name="partyWebhookRequestConfig">
+        <http:request-connection protocol="${webhook.protocol}" host="${webhook.host}" port="${webhook.port}"/>
+    </http:request-config>
+
+    <os:object-store name="partyObjectStore" persistent="false" entryTtl="0" expirationInterval="0"/>
+
+    <flow name="post-party-legal-entity-ingestion">
+        <http:listener config-ref="legalEntityIngestionListenerConfig" path="/party" allowedMethods="POST">
+            <http:response statusCode="#[vars.httpStatus default 201]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+
+        <set-variable variableName="requestPayload" value="#[payload]"/>
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="registrationNumber"><![CDATA[%dw 2.0
+output application/java
+---
+(vars.requestPayload.registrationNumber default "") as String
+]]></ee:set-variable>
+                <ee:set-variable variableName="companyName"><![CDATA[%dw 2.0
+output application/java
+---
+(vars.requestPayload.companyName default "") as String
+]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+
+        <choice>
+            <when expression="#[isBlank(vars.registrationNumber) or isBlank(vars.companyName)]">
+                <set-variable variableName="httpStatus" value="400"/>
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]'/>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "MISSING_REQUIRED_FIELDS",
+  message: "companyName and registrationNumber are mandatory for legal entity creation",
+  status: 400
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <os:retrieve key="#['reg::' ++ vars.registrationNumber]" target="existingPartyId" objectStore="partyObjectStore">
+                    <os:default-value><![CDATA[#[null]]]></os:default-value>
+                </os:retrieve>
+
+                <choice>
+                    <when expression="#[vars.existingPartyId != null]">
+                        <set-variable variableName="httpStatus" value="409"/>
+                        <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]'/>
+                        <ee:transform>
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "LEGAL_ENTITY_DUPLICATE_REGISTRATION",
+  message: "A legal entity with this registration number already exists",
+  registrationNumber: vars.registrationNumber,
+  existingPartyId: vars.existingPartyId,
+  status: 409
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <os:retrieve key="partyCounter" target="partyCounter" objectStore="partyObjectStore">
+                            <os:default-value><![CDATA[#[1000]]]></os:default-value>
+                        </os:retrieve>
+                        <set-variable variableName="partyId" value="#[(vars.partyCounter as Number) + 1 as String]"/>
+                        <os:store key="partyCounter" failIfPresent="false" objectStore="partyObjectStore">
+                            <os:value><![CDATA[#[vars.partyId as Number]]]></os:value>
+                        </os:store>
+
+                        <ee:transform>
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var nowTs = now()
+var enrichmentMode = p("legal.entity.enrichment.mode") default "none"
+var registerData = vars.requestPayload.businessRegisterData default {}
+var representativePayload = vars.requestPayload.representative default {}
+---
+{
+  id: vars.partyId,
+  href: "http://localhost:8082/party/" ++ vars.partyId,
+  "@type": "Organization",
+  "@baseType": "Party",
+  companyName: vars.companyName,
+  registrationNumber: vars.registrationNumber,
+  legalAddress: vars.requestPayload.legalAddress default {},
+  representative: representativePayload,
+  status: "created",
+  source: {
+    ingestionMode: "manual",
+    enrichmentMode: enrichmentMode
+  },
+  externalRegister: if (enrichmentMode == "request")
+      if (!isEmpty(registerData))
+        registerData
+      else if (!isEmpty(vars.requestPayload.businessRegisterReference default {}))
+        vars.requestPayload.businessRegisterReference
+      else null
+    else null,
+  createDate: nowTs as String,
+  lastUpdate: nowTs as String
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+
+                        <os:store key="#['party::' ++ vars.partyId]" failIfPresent="true" objectStore="partyObjectStore">
+                            <os:value><![CDATA[#[payload]]]></os:value>
+                        </os:store>
+                        <os:store key="#['reg::' ++ vars.registrationNumber]" failIfPresent="true" objectStore="partyObjectStore">
+                            <os:value><![CDATA[#[vars.partyId]]]></os:value>
+                        </os:store>
+
+                        <set-variable variableName="eventType" value="partyCreateEvent"/>
+                        <set-variable variableName="partyForEvent" value="#[payload]"/>
+                        <flow-ref name="publishPartyWebhookEvent"/>
+                        <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json","Location":"/party/" ++ vars.partyId}]'/>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+
+    <flow name="patch-party-by-id-legal-entity-ingestion">
+        <http:listener config-ref="legalEntityIngestionListenerConfig" path="/party/{id}" allowedMethods="PATCH">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+
+        <set-variable variableName="partyId" value="#[attributes.uriParams.id]"/>
+        <set-variable variableName="patchPayload" value="#[payload]"/>
+        <os:retrieve key="#['party::' ++ vars.partyId]" target="existingParty" objectStore="partyObjectStore">
+            <os:default-value><![CDATA[#[null]]]></os:default-value>
+        </os:retrieve>
+
+        <choice>
+            <when expression="#[vars.existingParty == null]">
+                <set-variable variableName="httpStatus" value="404"/>
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]'/>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "PARTY_NOT_FOUND",
+  message: "No party exists with id " ++ vars.partyId,
+  status: 404
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(vars.existingParty - "id" - "registrationNumber" - "createDate")
+    ++ vars.patchPayload
+    ++ {
+      id: vars.existingParty.id,
+      registrationNumber: vars.existingParty.registrationNumber,
+      createDate: vars.existingParty.createDate,
+      lastUpdate: now() as String
+    }]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+
+                <os:store key="#['party::' ++ vars.partyId]" failIfPresent="false" objectStore="partyObjectStore">
+                    <os:value><![CDATA[#[payload]]]></os:value>
+                </os:store>
+
+                <set-variable variableName="eventType" value="partyAttributeValueChangeEvent"/>
+                <set-variable variableName="partyForEvent" value="#[payload]"/>
+                <flow-ref name="publishPartyWebhookEvent"/>
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]'/>
+            </otherwise>
+        </choice>
+    </flow>
+
+    <flow name="get-party-by-id-legal-entity-ingestion">
+        <http:listener config-ref="legalEntityIngestionListenerConfig" path="/party/{id}" allowedMethods="GET">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+
+        <set-variable variableName="partyId" value="#[attributes.uriParams.id]"/>
+        <os:retrieve key="#['party::' ++ vars.partyId]" target="existingParty" objectStore="partyObjectStore">
+            <os:default-value><![CDATA[#[null]]]></os:default-value>
+        </os:retrieve>
+        <choice>
+            <when expression="#[vars.existingParty == null]">
+                <set-variable variableName="httpStatus" value="404"/>
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]'/>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: "PARTY_NOT_FOUND",
+  message: "No party exists with id " ++ vars.partyId,
+  status: 404
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <set-payload value="#[vars.existingParty]"/>
+                <set-variable variableName="outboundHeaders" value='#[{"Content-Type":"application/json"}]'/>
+            </otherwise>
+        </choice>
+    </flow>
+
+    <sub-flow name="publishPartyWebhookEvent">
+        <choice>
+            <when expression="#[(p('webhook.enabled') default 'false') == 'true']">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var party = vars.partyForEvent default {}
+---
+{
+  eventType: vars.eventType default "partyEvent",
+  eventTime: now() as String,
+  event: {
+    id: party.id default null,
+    href: party.href default null,
+    "@referredType": "Party",
+    party: party
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <try>
+                    <http:request method="POST" config-ref="partyWebhookRequestConfig" path="${webhook.path}">
+                        <http:headers><![CDATA[#[{"Content-Type":"application/json"}]]]></http:headers>
+                    </http:request>
+                    <error-handler>
+                        <on-error-continue logException="true">
+                            <logger level="WARN" message="Party webhook notification failed but API response is not blocked."/>
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+            </when>
+        </choice>
+    </sub-flow>
+</mule>

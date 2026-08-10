@@ -1,24 +1,32 @@
 {
-  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero.",
-  "relatedParty": {
-    "privacyProfileId": "dictum"
-  },
-  "orderItem": [
-    {
-      "id": "dolor",
-      "action": "venenatis",
-      "productOffering": {
-        "id": "consectetur"
-      }
-    }
-  ],
-  "payment": {
-    "cardToken": "viverra",
-    "amount": 16,
-    "currency": "consectetur"
-  },
   "notification": {
-    "channel": "tempor",
+    "channel": "justo",
     "recipient": "faucibus"
+  },
+  "identity": {
+    "passportNumber": "semper",
+    "nationality": "lectus",
+    "issuingCountry": "nunc",
+    "givenName": "Curt",
+    "familyName": "Davinet",
+    "countryOfResidence": "dolor",
+    "birthDate": "nunc",
+    "email": "Allyn.Davio@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 44,
+    "currency": "lorem",
+    "offeringId": "viverra"
+  },
+  "payment": {
+    "amount": 77,
+    "currency": "libero",
+    "cardToken": "lectus"
+  },
+  "consent": {
+    "privacyProfileId": "pretium",
+    "marketingConsent": true,
+    "privacyAccepted": false,
+    "agreedToTerms": true
   }
 }

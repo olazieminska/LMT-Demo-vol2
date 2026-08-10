@@ -1,0 +1,24 @@
+{
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor erat erat sed mi. Aliquam",
+  "relatedParty": {
+    "privacyProfileId": "pulvinar"
+  },
+  "orderItem": [
+    {
+      "id": "In",
+      "action": "tincidunt",
+      "productOffering": {
+        "id": "erat"
+      }
+    }
+  ],
+  "payment": {
+    "cardToken": "amet",
+    "amount": 32,
+    "currency": "molestie"
+  },
+  "notification": {
+    "channel": "a",
+    "recipient": "sodales"
+  }
+}

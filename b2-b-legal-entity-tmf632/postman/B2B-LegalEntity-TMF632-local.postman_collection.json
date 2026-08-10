@@ -1,0 +1,156 @@
+{
+  "info": {
+    "_postman_id": "e5f8c564-a4a7-4f86-a179-68209139780f",
+    "name": "B2B Legal Entity TMF632 (Local)",
+    "description": "Quick local demo collection for Legal Entity Data Ingestion use case on TMF632 scaffolded organization endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1 - Create Legal Entity (201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"@type\": \"Organization\",\n  \"@baseType\": \"Party\",\n  \"name\": \"Demo Manufacturing SIA\",\n  \"organizationType\": \"company\",\n  \"organizationIdentification\": [\n    {\n      \"@type\": \"OrganizationIdentification\",\n      \"identificationType\": \"commercialRegistration\",\n      \"identificationId\": \"REG-010-001\"\n    }\n  ],\n  \"externalReference\": [\n    {\n      \"@type\": \"ExternalIdentifier\",\n      \"externalIdentifierType\": \"businessRegister\",\n      \"name\": \"LV-998877\",\n      \"owner\": \"LV-Register\"\n    }\n  ],\n  \"contactMedium\": [\n    {\n      \"@type\": \"GeographicAddressContactMedium\",\n      \"mediumType\": \"postalAddress\",\n      \"street1\": \"Brivibas 1\",\n      \"city\": \"Riga\",\n      \"country\": \"LV\"\n    }\n  ],\n  \"relatedParty\": [\n    {\n      \"@type\": \"RelatedPartyRefOrPartyRoleRef\",\n      \"role\": \"CEO\",\n      \"name\": \"Janis Berzins\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organization",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2 - Duplicate Create (409)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"@type\": \"Organization\",\n  \"@baseType\": \"Party\",\n  \"name\": \"Demo Manufacturing SIA\",\n  \"organizationIdentification\": [\n    {\n      \"@type\": \"OrganizationIdentification\",\n      \"identificationType\": \"commercialRegistration\",\n      \"identificationId\": \"REG-010-001\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organization",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization"
+          ]
+        }
+      }
+    },
+    {
+      "name": "3 - Get Organization By ID (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/organization/{{organizationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization",
+            "{{organizationId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4 - Patch Organization Incremental (200)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/merge-patch+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"@type\": \"Organization\",\n  \"@baseType\": \"Party\",\n  \"name\": \"Demo Manufacturing SIA Updated\",\n  \"partyCharacteristic\": [\n    {\n      \"@type\": \"StringCharacteristic\",\n      \"name\": \"externalRefreshBatch\",\n      \"valueType\": \"string\",\n      \"value\": \"job-2026-08-06\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organization/{{organizationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization",
+            "{{organizationId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5 - Get Organization After Patch (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/organization/{{organizationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization",
+            "{{organizationId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "6 - Patch Non-Existing Organization (404)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/merge-patch+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"@type\": \"Organization\",\n  \"@baseType\": \"Party\",\n  \"name\": \"ShouldFail\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organization/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization",
+            "9999"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081/api"
+    },
+    {
+      "key": "organizationId",
+      "value": "1001"
+    }
+  ]
+}

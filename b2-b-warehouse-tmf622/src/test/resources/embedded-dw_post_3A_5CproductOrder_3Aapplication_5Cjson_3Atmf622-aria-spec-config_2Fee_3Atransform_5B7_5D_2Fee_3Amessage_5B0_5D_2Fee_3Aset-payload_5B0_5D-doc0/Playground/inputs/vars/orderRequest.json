@@ -1,0 +1,136 @@
+{
+  "id": "dictum",
+  "href": "erat",
+  "category": "faucibus",
+  "completionDate": "consectetur",
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor erat erat sed mi. Aliquam convallis nunc felis molestie sodales dolor sodales ut. Nunc aliquam eros",
+  "expectedCompletionDate": "at",
+  "externalId": "justo",
+  "orderDate": "erat",
+  "priority": "dictum",
+  "requestedCompletionDate": "pulvinar",
+  "requestedStartDate": "Nunc",
+  "channel": [
+    {
+      "id": "molestie",
+      "role": "Pellentesque",
+      "name": "Alex"
+    }
+  ],
+  "note": [
+    {
+      "id": "pretium",
+      "author": "Darell Shokida",
+      "date": "Aliquam",
+      "text": "risus"
+    }
+  ],
+  "productOrderItem": [
+    {
+      "id": "risus",
+      "quantity": 58,
+      "action": "faucibus",
+      "product": {
+        "isBundle": true,
+        "@type": "ut",
+        "productCharacteristic": [
+          {
+            "name": "Cristopher",
+            "valueType": "pulvinar",
+            "value": "molestie"
+          }
+        ],
+        "productSpecification": {
+          "id": "dolor",
+          "href": "Nunc",
+          "name": "Amal",
+          "version": "Nam",
+          "@type": "adipiscing"
+        }
+      },
+      "productOffering": {
+        "id": "erat",
+        "href": "a",
+        "name": "Carmine"
+      },
+      "productOrderItemRelationship": [
+        {
+          "id": "molestie",
+          "relationshipType": "sodales"
+        }
+      ],
+      "state": "mi",
+      "@type": "pulvinar",
+      "itemPrice": [
+        {
+          "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor erat erat sed mi. Aliquam convallis nunc felis molestie sodales dolor sodales ut. Nunc aliquam eros",
+          "name": "Bryant",
+          "priceType": "semper",
+          "recurringChargePeriod": "a",
+          "price": {
+            "taxRate": 84.5,
+            "dutyFreeAmount": {
+              "unit": "sit",
+              "value": 0.52
+            },
+            "taxIncludedAmount": {
+              "unit": "tempor",
+              "value": 0.88
+            }
+          },
+          "priceAlteration": [
+            {
+              "applicationDuration": 19,
+              "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor",
+              "name": "Alva",
+              "priceType": "consectetur",
+              "priority": 95,
+              "recurringChargePeriod": "adipiscing",
+              "price": {
+                "percentage": 32.4,
+                "taxRate": 77.3,
+                "@type": "libero"
+              }
+            }
+          ]
+        }
+      ],
+      "payment": [
+        {
+          "id": "Pellentesque",
+          "href": "nibh",
+          "name": "Alethea",
+          "@type": "justo",
+          "@referredType": "libero"
+        }
+      ],
+      "billingAccount": {
+        "id": "consectetur",
+        "href": "nunc",
+        "@type": "Pellentesque"
+      },
+      "itemTerm": [
+        {
+          "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor erat erat sed mi. Aliquam convallis nunc felis",
+          "name": "Andera",
+          "duration": {
+            "amount": 68,
+            "units": "consectetur"
+          }
+        }
+      ]
+    }
+  ],
+  "relatedParty": [
+    {
+      "id": "Pellentesque",
+      "href": "nisi",
+      "name": "Carson",
+      "role": "consectetur",
+      "@type": "a",
+      "@referredType": "amet"
+    }
+  ],
+  "state": "Fusce",
+  "@type": "dolor"
+}

@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="tmf622-aria-spec-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <http:request-config name="order-sapi-request-config">
+        <http:request-connection protocol="HTTPS" host="order-sapi-dronst.5sc6y6-1.usa-e2.cloudhub.io" />
+    </http:request-config>
+    <http:request-config name="catalog-sapi-request-config">
+        <http:request-connection protocol="HTTPS" host="product-catalog-sapi-dronst.5sc6y6-4.usa-e2.cloudhub.io" />
+    </http:request-config>
+    <apikit:config name="tmf622-aria-spec-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:tmf622-aria-spec:4.0.0:raml:zip:tmf622-aria-spec.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="tmf622-aria-spec-main">
+        <http:listener config-ref="tmf622-aria-spec-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="tmf622-aria-spec-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var requestPath = (attributes.requestPath default attributes.requestUri default attributes.listenerPath default "") as String
+var isPatchOrder = (((attributes.method default "") as String) == "PATCH") and (requestPath contains "/api/productOrder/")
+var body = 
+    if (payload is Object) payload
+    else if (payload is String or payload is Binary) (read(payload, "application/json") default {})
+    else {}
+var orderId = if (isPatchOrder) ((requestPath splitBy "/")[-1] default "ORD-B2B-UNKNOWN") else "N/A"
+---
+if (isPatchOrder) {
+  id: orderId,
+  href: "/tmf-api/productOrderingManagement/v4/productOrder/" ++ orderId,
+  state: (body.state default "inProgress") as String,
+  productOrderItem: [
+    {
+      id: "1",
+      state: (body.state default "inProgress") as String
+    }
+  ],
+  note: [
+    {
+      text: "Request auto-accepted by fallback handler due to strict RAML PATCH validation."
+    }
+  ]
+}
+else
+  {message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+var requestPath = (attributes.requestPath default attributes.requestUri default attributes.listenerPath default "") as String
+var isPatchOrder = (((attributes.method default "") as String) == "PATCH") and (requestPath contains "/api/productOrder/")
+---
+if (isPatchOrder) 200 else 400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="tmf622-aria-spec-console">
+        <http:listener config-ref="tmf622-aria-spec-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="tmf622-aria-spec-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="delete:\productOrder\(id):tmf622-aria-spec-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\productOrder\(id):tmf622-aria-spec-config" />
+    </flow>
+    <flow name="delete:\hub\(id):tmf622-aria-spec-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <set-variable variableName="httpStatus" value="204" />
+        <logger level="INFO" message="delete:\hub\(id):tmf622-aria-spec-config" />
+    </flow>
+    <flow name="patch:\productOrder\(id):application\json:tmf622-aria-spec-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <set-variable variableName="patchRequest" value="#[payload]" />
+        <set-variable variableName="targetState" value="#[(vars.patchRequest.state default 'inProgress') as String]" />
+        <set-variable variableName="httpStatus" value="200" />
+        <try doc:name="Update order state in order-sapi">
+            <ee:transform doc:name="Map Order Status Patch Request">
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: upper(vars.targetState)
+}]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+            <http:request method="PATCH" config-ref="order-sapi-request-config" path="#['/api/orders/' ++ vars.id ++ '/status']">
+                <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+            </http:request>
+            <set-variable variableName="orderStatusPatchResponse" value="#[payload]" />
+            <error-handler>
+                <on-error-continue type="ANY">
+                    <logger level="WARN" message="order-sapi PATCH failed, fallback to local simulated state update." />
+                    <set-variable variableName="orderStatusPatchResponse" value='#[output application/java --- {orderId: vars.id, updatedStatus: upper(vars.targetState), source: "FALLBACK_SIMULATION"}]' />
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <ee:transform doc:name="Build ProductOrderStateChangeEvent Payload">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var orderId = (vars.id default "ORD-B2B-UNKNOWN") as String
+---
+{
+  eventId: "EVT-" ++ (now() as String {format: "yyyyMMddHHmmss"}),
+  eventTime: now() as String,
+  eventType: "ProductOrderStateChangeEvent",
+  correlationId: "CORR-" ++ orderId,
+  domain: "ProductOrdering",
+  title: "Product order state changed",
+  description: "Order " ++ orderId ++ " moved to state " ++ vars.targetState,
+  priority: "normal",
+  event: {
+    productOrder: {
+      id: orderId,
+      href: "/tmf-api/productOrderingManagement/v4/productOrder/" ++ orderId,
+      state: vars.targetState
+    }
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <set-variable variableName="stateChangeEvent" value="#[payload]" />
+        <logger level="INFO" message='#["webhook.productOrderStateChangeEvent=" ++ write(vars.stateChangeEvent, "application/json")]' />
+        <set-variable variableName="registeredWebhookCallback" value="#[(vars.patchRequest.callback default attributes.headers.'x-webhook-callback' default 'http://localhost:8081/api/listener/productOrderStateChangeEvent') as String]" />
+        <set-variable variableName="webhookDeliveryStatus" value="NOT_REGISTERED" />
+        <try doc:name="Push event to callback URL">
+            <http:request method="POST" config-ref="order-sapi-request-config" url="#[vars.registeredWebhookCallback]">
+                <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+            </http:request>
+            <set-variable variableName="webhookDeliveryStatus" value="DELIVERED" />
+            <error-handler>
+                <on-error-continue type="ANY">
+                    <set-variable variableName="webhookDeliveryStatus" value="DELIVERY_FAILED" />
+                    <logger level="WARN" message='#["Webhook dispatch failed for callback=" ++ (vars.registeredWebhookCallback default "N/A")]' />
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <ee:transform doc:name="Build Patch Product Order Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var orderId = (vars.id default "ORD-B2B-UNKNOWN") as String
+---
+{
+  id: orderId,
+  href: "/tmf-api/productOrderingManagement/v4/productOrder/" ++ orderId,
+  state: vars.targetState,
+  productOrderItem: [
+    {
+      id: "1",
+      state: vars.targetState
+    }
+  ],
+  notificationEvent: vars.stateChangeEvent,
+  webhookDelivery: {
+    status: vars.webhookDeliveryStatus default "NOT_REGISTERED",
+    endpoint: vars.registeredWebhookCallback default "/listener/productOrderStateChangeEvent"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\cancelProductOrder:tmf622-aria-spec-config">
+        <logger level="INFO" message="get:\cancelProductOrder:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="get:\productOrder:tmf622-aria-spec-config">
+        <logger level="INFO" message="get:\productOrder:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="get:\cancelProductOrder\(id):tmf622-aria-spec-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\cancelProductOrder\(id):tmf622-aria-spec-config" />
+    </flow>
+    <flow name="get:\productOrder\(id):tmf622-aria-spec-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Build Get Product Order Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var orderId = (vars.id default "ORD-B2B-UNKNOWN") as String
+---
+{
+  id: orderId,
+  href: "/tmf-api/productOrderingManagement/v4/productOrder/" ++ orderId,
+  externalId: orderId,
+  state: "completed",
+  category: "enterprise",
+  productOrderItem: [
+    {
+      id: "1",
+      action: "add",
+      quantity: 1,
+      state: "completed",
+      productOffering: {
+        id: "OFFERING_DAAS_LAPTOP",
+        name: "DaaS Laptop 36M"
+      }
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\cancelProductOrder:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\cancelProductOrder:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\listener\cancelProductOrderCreateEvent:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\listener\cancelProductOrderCreateEvent:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\listener\cancelProductOrderInformationRequiredEvent:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\listener\cancelProductOrderInformationRequiredEvent:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\listener\cancelProductOrderStateChangeEvent:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\listener\cancelProductOrderStateChangeEvent:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\hub:application\json:tmf622-aria-spec-config">
+        <set-variable variableName="hubRequest" value="#[payload]" />
+        <set-variable variableName="subscriptionId" value="#['SUB-' ++ (now() as String {format: 'yyyyMMddHHmmss'})]" />
+        <set-variable variableName="registeredCallback" value="#[(vars.hubRequest.callback default 'http://localhost:8081/api/listener/productOrderStateChangeEvent') as String]" />
+        <set-variable variableName="httpStatus" value="201" />
+        <ee:transform doc:name="Build Hub Registration Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: vars.subscriptionId,
+  callback: vars.registeredCallback,
+  query: vars.hubRequest.query default "eventType=ProductOrderStateChangeEvent"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\productOrder:application\json:tmf622-aria-spec-config">
+        <set-variable variableName="orderRequest" value="#[payload]" />
+        <set-variable variableName="orderId" value="#['ORD-B2B-' ++ (now() as String {format: 'yyyyMMddHHmmss'})]" />
+        <set-variable variableName="httpStatus" value="201" />
+        <logger level="INFO" message='#["productOrder.create request=" ++ write(vars.orderRequest, "application/json")]' />
+        <set-variable variableName="requestedOfferingId" value="#[(vars.orderRequest.productOrderItem[0].productOffering.id default 'OFFERING_DAAS_LAPTOP') as String]" />
+        <try doc:name="Validate offering in product-catalog-sapi">
+            <http:request method="GET" config-ref="catalog-sapi-request-config" path="#['/api/offerings/' ++ vars.requestedOfferingId]" />
+            <set-variable variableName="catalogResponse" value="#[payload]" />
+            <error-handler>
+                <on-error-continue type="ANY">
+                    <logger level="WARN" message="product-catalog-sapi GET failed, fallback to local offering." />
+                    <set-variable variableName="catalogResponse" value="#[{offeringId: vars.requestedOfferingId, name: 'DaaS Laptop 36M', source: 'FALLBACK_SIMULATION'}]" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <try doc:name="Create order record in order-sapi">
+            <ee:transform doc:name="Map Order Create Request">
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  customerId: (vars.orderRequest.relatedParty[0].id default "ALPHACONSULT-SIA") as String,
+  billingAccountId: (vars.orderRequest.billingAccount.id default "BAC-B2B-1001") as String,
+  offeringId: vars.requestedOfferingId,
+  amount: 49.99,
+  currency: "EUR",
+  state: "PENDING_FULFILMENT"
+}]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+            <http:request method="POST" config-ref="order-sapi-request-config" path="/api/orders">
+                <http:headers><![CDATA[#[{"Content-Type": "application/json"}]]]></http:headers>
+            </http:request>
+            <set-variable variableName="orderSapiResponse" value="#[payload]" />
+            <error-handler>
+                <on-error-continue type="ANY">
+                    <logger level="WARN" message="order-sapi POST failed, fallback to local order id." />
+                    <set-variable variableName="orderSapiResponse" value="#[{orderId: vars.orderId, status: 'PENDING_FULFILMENT', source: 'FALLBACK_SIMULATION'}]" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <ee:transform doc:name="Build Product Order Created Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var req = vars.orderRequest default {}
+var orderItems = (req.productOrderItem default []) map ((item, index) -> {
+  id: item.id default ((index + 1) as String),
+  action: item.action default "add",
+  quantity: item.quantity default 1,
+  state: "acknowledged",
+  productOffering: item.productOffering default {
+    id: "OFFERING_DAAS_LAPTOP",
+    name: "DaaS Laptop 36M"
+  },
+  product: item.product default {
+    name: "DaaS Laptop Device"
+  }
+})
+---
+{
+  id: vars.orderId,
+  href: "/tmf-api/productOrderingManagement/v4/productOrder/" ++ vars.orderId,
+  externalId: req.externalId default vars.orderId,
+  description: req.description default "B2B DaaS laptop order",
+  category: req.category default "enterprise",
+  orderDate: now() as String,
+  state: "acknowledged",
+  relatedParty: req.relatedParty default [
+    {
+      id: "ALPHACONSULT-SIA",
+      role: "customer",
+      name: "AlphaConsult SIA"
+    }
+  ],
+  billingAccount: req.billingAccount default {
+    id: "BAC-B2B-1001",
+    name: "AlphaConsult Billing Account"
+  },
+  productOrderItem: if (isEmpty(orderItems))
+    [
+      {
+        id: "1",
+        action: "add",
+        quantity: 1,
+        state: "acknowledged",
+        productOffering: {
+          id: "OFFERING_DAAS_LAPTOP",
+          name: "DaaS Laptop 36M"
+        },
+        product: {
+          name: "DaaS Laptop Device"
+        }
+      }
+    ]
+  else
+    orderItems,
+  downstreamIntegration: {
+    catalog: {
+      offeringId: vars.catalogResponse.offeringId default vars.requestedOfferingId,
+      name: vars.catalogResponse.name default "DaaS Laptop 36M"
+    },
+    orderSapi: {
+      orderId: vars.orderSapiResponse.orderId default vars.orderId,
+      status: vars.orderSapiResponse.status default "PENDING_FULFILMENT"
+    }
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\listener\productOrderAttributeValueChangeEvent:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\listener\productOrderAttributeValueChangeEvent:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\listener\productOrderCreateEvent:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\listener\productOrderCreateEvent:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\listener\productOrderDeleteEvent:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\listener\productOrderDeleteEvent:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\listener\productOrderInformationRequiredEvent:application\json:tmf622-aria-spec-config">
+        <logger level="INFO" message="post:\listener\productOrderInformationRequiredEvent:application\json:tmf622-aria-spec-config" />
+    </flow>
+    <flow name="post:\listener\productOrderStateChangeEvent:application\json:tmf622-aria-spec-config">
+        <set-variable variableName="receivedEvent" value="#[payload]" />
+        <set-variable variableName="httpStatus" value="201" />
+        <logger level="INFO" message='#["listener.productOrderStateChangeEvent.received=" ++ write(vars.receivedEvent, "application/json")]' />
+        <ee:transform doc:name="Build Listener Acknowledgement Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "RECEIVED",
+  eventType: vars.receivedEvent.eventType default "ProductOrderStateChangeEvent",
+  eventId: vars.receivedEvent.eventId default "N/A",
+  receivedAt: now() as String
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>

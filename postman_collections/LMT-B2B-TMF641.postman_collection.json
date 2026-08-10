@@ -1,0 +1,94 @@
+{
+  "info": {
+    "_postman_id": "6cd9808f-82bc-4335-9791-a8ae335ba343",
+    "name": "LMT-B2B-TMF641",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34073391"
+  },
+  "item": [
+    {
+      "name": "Step1-placeOrder",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"externalId\": \"EXT-DEMO-0001\",\n    \"category\": \"Managed Connectivity + DaaS\",\n    \"description\": \"Activate enterprise bundle: unlimited mobile voice/data, FWA internet, 36-month laptop DaaS\",\n    \"serviceOrderItem\": [\n      {\n        \"id\": \"1\",\n        \"action\": \"add\",\n        \"service\": { \"name\": \"Unlimited Mobile Voice & Data - Employee Lines\", \"@type\": \"Service\" }\n      }\n    ]\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-641-serviceorder-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/serviceOrder",
+          "protocol": "https",
+          "host": [
+            "b2b-641-serviceorder-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "serviceOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step2-GetOrder",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://b2b-641-serviceorder-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/serviceOrder",
+          "protocol": "https",
+          "host": [
+            "b2b-641-serviceorder-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "serviceOrder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step3-GetOrderID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://b2b-641-serviceorder-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/serviceOrder/SO-12345678-20260807140000",
+          "protocol": "https",
+          "host": [
+            "b2b-641-serviceorder-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "serviceOrder",
+            "SO-12345678-20260807140000"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

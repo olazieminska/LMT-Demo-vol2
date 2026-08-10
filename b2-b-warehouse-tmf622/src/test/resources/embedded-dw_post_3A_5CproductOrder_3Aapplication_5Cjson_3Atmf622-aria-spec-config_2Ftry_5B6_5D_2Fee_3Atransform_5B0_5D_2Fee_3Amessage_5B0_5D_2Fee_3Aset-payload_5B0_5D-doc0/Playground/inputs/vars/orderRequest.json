@@ -1,0 +1,136 @@
+{
+  "id": "erat",
+  "href": "tempor",
+  "category": "Aliquam",
+  "completionDate": "at",
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae",
+  "expectedCompletionDate": "a",
+  "externalId": "nunc",
+  "orderDate": "vitae",
+  "priority": "at",
+  "requestedCompletionDate": "ipsum",
+  "requestedStartDate": "Nam",
+  "channel": [
+    {
+      "id": "convallis",
+      "role": "ac",
+      "name": "Burt"
+    }
+  ],
+  "note": [
+    {
+      "id": "eget",
+      "author": "Cecil Allabush",
+      "date": "Fusce",
+      "text": "nunc"
+    }
+  ],
+  "productOrderItem": [
+    {
+      "id": "libero",
+      "quantity": 32,
+      "action": "sed",
+      "product": {
+        "isBundle": true,
+        "@type": "eros",
+        "productCharacteristic": [
+          {
+            "name": "Claude",
+            "valueType": "dictum",
+            "value": "Nunc"
+          }
+        ],
+        "productSpecification": {
+          "id": "a",
+          "href": "dolor",
+          "name": "Aja",
+          "version": "tempor",
+          "@type": "lorem"
+        }
+      },
+      "productOffering": {
+        "id": "consectetur",
+        "href": "tempor",
+        "name": "Alexis"
+      },
+      "productOrderItemRelationship": [
+        {
+          "id": "molestie",
+          "relationshipType": "pulvinar"
+        }
+      ],
+      "state": "dolor",
+      "@type": "a",
+      "itemPrice": [
+        {
+          "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum semper tempor erat erat sed mi. Aliquam convallis nunc",
+          "name": "Conrad",
+          "priceType": "amet",
+          "recurringChargePeriod": "a",
+          "price": {
+            "taxRate": 23.6,
+            "dutyFreeAmount": {
+              "unit": "adipiscing",
+              "value": 0.38
+            },
+            "taxIncludedAmount": {
+              "unit": "eget",
+              "value": 0.29
+            }
+          },
+          "priceAlteration": [
+            {
+              "applicationDuration": 18,
+              "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur",
+              "name": "Damion",
+              "priceType": "semper",
+              "priority": 37,
+              "recurringChargePeriod": "elit",
+              "price": {
+                "percentage": 14.9,
+                "taxRate": 13.6,
+                "@type": "sit"
+              }
+            }
+          ]
+        }
+      ],
+      "payment": [
+        {
+          "id": "vitae",
+          "href": "semper",
+          "name": "Alissa",
+          "@type": "a",
+          "@referredType": "tincidunt"
+        }
+      ],
+      "billingAccount": {
+        "id": "dictum",
+        "href": "tempor",
+        "@type": "ipsum"
+      },
+      "itemTerm": [
+        {
+          "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie tempor nunc risus faucibus ipsum",
+          "name": "Ali",
+          "duration": {
+            "amount": 81,
+            "units": "ac"
+          }
+        }
+      ]
+    }
+  ],
+  "relatedParty": [
+    {
+      "id": "molestie",
+      "href": "sed",
+      "name": "Alysia",
+      "role": "at",
+      "@type": "aliquam",
+      "@referredType": "lectus"
+    }
+  ],
+  "state": "In",
+  "@type": "ut"
+}

@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "sodales",
+    "recipient": "nunc"
+  },
+  "identity": {
+    "passportNumber": "molestie",
+    "nationality": "Aliquam",
+    "issuingCountry": "molestie",
+    "givenName": "Alden",
+    "familyName": "Alishoner",
+    "countryOfResidence": "ut",
+    "birthDate": "molestie",
+    "email": "Amelia.Davitt@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 26,
+    "currency": "consectetur",
+    "offeringId": "venenatis"
+  },
+  "payment": {
+    "amount": 19,
+    "currency": "felis",
+    "cardToken": "ut"
+  },
+  "consent": {
+    "privacyProfileId": "convallis",
+    "marketingConsent": false,
+    "privacyAccepted": true,
+    "agreedToTerms": true
+  }
+}

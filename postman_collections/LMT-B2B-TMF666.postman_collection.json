@@ -1,0 +1,165 @@
+{
+  "info": {
+    "_postman_id": "5d0cde49-37ed-4e82-a896-892d253370c4",
+    "name": "LMT-B2B-TMF666",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34073391"
+  },
+  "item": [
+    {
+      "name": "Step1-PostAccount",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"AlphaConsult SIA - Main Billing Account\",\n    \"description\": \"Primary B2B billing account for Managed Connectivity & DaaS Bundle\",\n    \"ratingType\": \"postpaid\",\n    \"category\": \"B2B enterprise\",\n    \"currencyCode\": \"EUR\",\n    \"accountType\": \"Corporate\",\n    \"relatedParty\": [\n      {\n        \"id\": \"cust-alphaconsult-01\",\n        \"name\": \"AlphaConsult SIA\",\n        \"role\": \"Customer\",\n        \"@type\": \"RelatedParty\",\n        \"@referredType\": \"Organization\"\n      }\n    ],\n    \"billingCycleSpecification\": {\n      \"name\": \"Monthly - First Day of Month\",\n      \"frequency\": \"monthly\",\n      \"billingDateShift\": 1,\n      \"@type\": \"BillingCycleSpecification\"\n    },\n    \"paymentMethod\": {\n      \"id\": \"pm-bank-transfer-01\",\n      \"name\": \"Bank Transfer / Direct Debit\",\n      \"@type\": \"PaymentMethodRef\"\n    },\n    \"contact\": [\n      {\n        \"contactType\": \"Billing Contact\",\n        \"contactName\": \"Anna Sales Agent\",\n        \"emailAddress\": \"billing@alphaconsult.lv\",\n        \"@type\": \"Contact\"\n      }\n    ],\n    \"@type\": \"BillingAccount\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/billingAccount",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf666-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billingAccount"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step2-GetAccount-ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/billingAccount/AC-SIA-BA-001",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf666-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billingAccount",
+            "AC-SIA-BA-001"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step3-GetAccountList",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/billingAccount",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf666-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billingAccount"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step4-GetBillingCycle",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/billingCycleSpecification",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf666-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billingCycleSpecification"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step5-GetBillingCycle-ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-billing-tmf666-dronst.5sc6y6-3.usa-e2.cloudhub.io/api/billingCycleSpecification/BCS-MONTHLY-01",
+          "protocol": "https",
+          "host": [
+            "b2b-billing-tmf666-dronst",
+            "5sc6y6-3",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "api",
+            "billingCycleSpecification",
+            "BCS-MONTHLY-01"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

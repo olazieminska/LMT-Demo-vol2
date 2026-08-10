@@ -1,0 +1,136 @@
+{
+  "id": "elit",
+  "href": "Pellentesque",
+  "category": "erat",
+  "completionDate": "faucibus",
+  "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie",
+  "expectedCompletionDate": "molestie",
+  "externalId": "aliquam",
+  "orderDate": "at",
+  "priority": "erat",
+  "requestedCompletionDate": "aliquam",
+  "requestedStartDate": "dictum",
+  "channel": [
+    {
+      "id": "erat",
+      "role": "aliquam",
+      "name": "Alvera"
+    }
+  ],
+  "note": [
+    {
+      "id": "ut",
+      "author": "Collin Davoren",
+      "date": "molestie",
+      "text": "elit"
+    }
+  ],
+  "productOrderItem": [
+    {
+      "id": "aliquam",
+      "quantity": 48,
+      "action": "eros",
+      "product": {
+        "isBundle": false,
+        "@type": "eros",
+        "productCharacteristic": [
+          {
+            "name": "Cesar",
+            "valueType": "eros",
+            "value": "tincidunt"
+          }
+        ],
+        "productSpecification": {
+          "id": "tempor",
+          "href": "ipsum",
+          "name": "Allegra",
+          "version": "tincidunt",
+          "@type": "dictum"
+        }
+      },
+      "productOffering": {
+        "id": "ac",
+        "href": "ac",
+        "name": "Darell"
+      },
+      "productOrderItemRelationship": [
+        {
+          "id": "a",
+          "relationshipType": "Fusce"
+        }
+      ],
+      "state": "tincidunt",
+      "@type": "erat",
+      "itemPrice": [
+        {
+          "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce at arcu lectus. Nam lorem nibh pretium a nisi a viverra consectetur dui. In ac tincidunt libero. Pellentesque pulvinar justo vitae molestie",
+          "name": "Coleman",
+          "priceType": "Aliquam",
+          "recurringChargePeriod": "a",
+          "price": {
+            "taxRate": 19.5,
+            "dutyFreeAmount": {
+              "unit": "nibh",
+              "value": 0.27
+            },
+            "taxIncludedAmount": {
+              "unit": "In",
+              "value": 0.36
+            }
+          },
+          "priceAlteration": [
+            {
+              "applicationDuration": 69,
+              "description": "Lorem",
+              "name": "Caleb",
+              "priceType": "viverra",
+              "priority": 83,
+              "recurringChargePeriod": "tempor",
+              "price": {
+                "percentage": 71,
+                "taxRate": 90,
+                "@type": "nisi"
+              }
+            }
+          ]
+        }
+      ],
+      "payment": [
+        {
+          "id": "venenatis",
+          "href": "Nunc",
+          "name": "Christoper",
+          "@type": "faucibus",
+          "@referredType": "adipiscing"
+        }
+      ],
+      "billingAccount": {
+        "id": "consectetur",
+        "href": "Nam",
+        "@type": "lectus"
+      },
+      "itemTerm": [
+        {
+          "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Fusce",
+          "name": "Adrien",
+          "duration": {
+            "amount": 31,
+            "units": "pulvinar"
+          }
+        }
+      ]
+    }
+  ],
+  "relatedParty": [
+    {
+      "id": "ut",
+      "href": "lorem",
+      "name": "Aja",
+      "role": "a",
+      "@type": "nisi",
+      "@referredType": "venenatis"
+    }
+  ],
+  "state": "eget",
+  "@type": "venenatis"
+}

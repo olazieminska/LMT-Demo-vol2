@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "adipiscing",
+    "recipient": "molestie"
+  },
+  "identity": {
+    "passportNumber": "Nam",
+    "nationality": "mi",
+    "issuingCountry": "felis",
+    "givenName": "Bruce",
+    "familyName": "Algy",
+    "countryOfResidence": "a",
+    "birthDate": "vitae",
+    "email": "Almeta.Davinet@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 78,
+    "currency": "adipiscing",
+    "offeringId": "tempor"
+  },
+  "payment": {
+    "amount": 77,
+    "currency": "nunc",
+    "cardToken": "Nunc"
+  },
+  "consent": {
+    "privacyProfileId": "pulvinar",
+    "marketingConsent": false,
+    "privacyAccepted": false,
+    "agreedToTerms": false
+  }
+}

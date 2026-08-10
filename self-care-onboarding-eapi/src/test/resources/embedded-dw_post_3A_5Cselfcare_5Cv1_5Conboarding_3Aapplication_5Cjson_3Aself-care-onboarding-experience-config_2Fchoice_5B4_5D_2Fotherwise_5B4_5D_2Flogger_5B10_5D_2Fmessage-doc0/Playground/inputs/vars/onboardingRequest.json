@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "ipsum",
+    "recipient": "Lorem"
+  },
+  "identity": {
+    "passportNumber": "pretium",
+    "nationality": "Aliquam",
+    "issuingCountry": "nunc",
+    "givenName": "Abdul",
+    "familyName": "Davson",
+    "countryOfResidence": "lorem",
+    "birthDate": "dictum",
+    "email": "Allena.Daviot@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 52,
+    "currency": "amet",
+    "offeringId": "a"
+  },
+  "payment": {
+    "amount": 97,
+    "currency": "ipsum",
+    "cardToken": "In"
+  },
+  "consent": {
+    "privacyProfileId": "sodales",
+    "marketingConsent": true,
+    "privacyAccepted": false,
+    "agreedToTerms": false
+  }
+}

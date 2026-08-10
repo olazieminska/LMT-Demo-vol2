@@ -1,0 +1,199 @@
+{
+  "info": {
+    "_postman_id": "3e4bbe14-ff28-4cce-8c7d-5ad9e3247324",
+    "name": "LMT-B2B-Scenario1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34073391"
+  },
+  "item": [
+    {
+      "name": "Step1-Post-Organization-TMF632",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const randomRegNo = \"4000\" + Math.floor(10000000 + Math.random() * 90000000);",
+              "pm.variables.set(\"identificationId\", randomRegNo);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"@type\": \"Organization\",\n    \"@baseType\": \"Party\",\n    \"name\": \"AlphaConsult SIA\",\n    \"tradingName\": \"AlphaConsult Logistics\",\n    \"nameType\": \"Legal Name\",\n    \"organizationType\": \"Company\",\n    \"isHeadOffice\": true,\n    \"isLegalEntity\": true,\n    \"status\": \"initialized\",\n    \"organizationIdentification\": [\n      {\n        \"@type\": \"OrganizationIdentification\",\n        \"identificationId\": \"{{identificationId}}\",\n        \"identificationType\": \"RegistrationNumber\",\n        \"issuingAuthority\": \"Register of Enterprises of the Republic of Latvia\",\n        \"issuingDate\": \"2022-05-10T00:00:00Z\"\n      }\n    ],\n    \"relatedParty\": [\n      {\n        \"@type\": \"PartyRef\",\n        \"@referredType\": \"Individual\",\n        \"id\": \"ind-janis-8821\",\n        \"href\": \"/tmf-api/party/v4/individual/ind-janis-8821\",\n        \"name\": \"Jānis Bērziņš\",\n        \"role\": \"LegalRepresentative\"\n      }\n    ],\n    \"contactMedium\": [\n      {\n        \"@type\": \"ContactMedium\",\n        \"mediumType\": \"PostalAddress\",\n        \"preferred\": true,\n        \"characteristic\": {\n          \"@type\": \"PostalAddress\",\n          \"contactType\": \"Legal Address\",\n          \"street1\": \"Kārļa Ulmaņa gatve 114\",\n          \"street2\": \"Building B, Floor 2\",\n          \"city\": \"Rīga\",\n          \"postCode\": \"LV-1046\",\n          \"country\": \"Latvia\"\n        }\n      },\n      {\n        \"@type\": \"ContactMedium\",\n        \"mediumType\": \"Email\",\n        \"preferred\": true,\n        \"characteristic\": {\n          \"@type\": \"EmailContact\",\n          \"contactType\": \"Corporate Email\",\n          \"emailAddress\": \"info@alphaconsult.lv\"\n        }\n      }\n    ],\n    \"partyCharacteristic\": [\n      {\n        \"@type\": \"PartyCharacteristic\",\n        \"name\": \"employeeCount\",\n        \"valueType\": \"integer\",\n        \"value\": \"12\"\n      },\n      {\n        \"@type\": \"PartyCharacteristic\",\n        \"name\": \"industrySegment\",\n        \"valueType\": \"string\",\n        \"value\": \"Logistics & Freight Forwarding\"\n      }\n    ]\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8081/tmf-api/party/v4/organization?triggerWebhook=true",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "tmf-api",
+            "party",
+            "v4",
+            "organization"
+          ],
+          "query": [
+            {
+              "key": "triggerWebhook",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step2-Post-Organization-Exists-Error-TMF632",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"@type\": \"Organization\",\n    \"@baseType\": \"Party\",\n    \"name\": \"AlphaConsult SIA\",\n    \"tradingName\": \"AlphaConsult Logistics\",\n    \"nameType\": \"Legal Name\",\n    \"organizationType\": \"Company\",\n    \"isHeadOffice\": true,\n    \"isLegalEntity\": true,\n    \"status\": \"initialized\",\n    \"organizationIdentification\": [\n      {\n        \"@type\": \"OrganizationIdentification\",\n        \"identificationId\": \"40003987654\",\n        \"identificationType\": \"RegistrationNumber\",\n        \"issuingAuthority\": \"Register of Enterprises of the Republic of Latvia\",\n        \"issuingDate\": \"2022-05-10T00:00:00Z\"\n      }\n    ],\n    \"relatedParty\": [\n      {\n        \"@type\": \"PartyRef\",\n        \"@referredType\": \"Individual\",\n        \"id\": \"ind-janis-8821\",\n        \"href\": \"/tmf-api/party/v4/individual/ind-janis-8821\",\n        \"name\": \"Jānis Bērziņš\",\n        \"role\": \"LegalRepresentative\"\n      }\n    ],\n    \"contactMedium\": [\n      {\n        \"@type\": \"ContactMedium\",\n        \"mediumType\": \"PostalAddress\",\n        \"preferred\": true,\n        \"characteristic\": {\n          \"@type\": \"PostalAddress\",\n          \"contactType\": \"Legal Address\",\n          \"street1\": \"Kārļa Ulmaņa gatve 114\",\n          \"street2\": \"Building B, Floor 2\",\n          \"city\": \"Rīga\",\n          \"postCode\": \"LV-1046\",\n          \"country\": \"Latvia\"\n        }\n      },\n      {\n        \"@type\": \"ContactMedium\",\n        \"mediumType\": \"Email\",\n        \"preferred\": true,\n        \"characteristic\": {\n          \"@type\": \"EmailContact\",\n          \"contactType\": \"Corporate Email\",\n          \"emailAddress\": \"info@alphaconsult.lv\"\n        }\n      }\n    ],\n    \"partyCharacteristic\": [\n      {\n        \"@type\": \"PartyCharacteristic\",\n        \"name\": \"employeeCount\",\n        \"valueType\": \"integer\",\n        \"value\": \"12\"\n      },\n      {\n        \"@type\": \"PartyCharacteristic\",\n        \"name\": \"industrySegment\",\n        \"valueType\": \"string\",\n        \"value\": \"Logistics & Freight Forwarding\"\n      }\n    ]\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-scenario1-tmf632-v4-dronst.5sc6y6-4.usa-e2.cloudhub.io/tmf-api/party/v4/organization?triggerWebhook=true",
+          "protocol": "https",
+          "host": [
+            "b2b-scenario1-tmf632-v4-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "tmf-api",
+            "party",
+            "v4",
+            "organization"
+          ],
+          "query": [
+            {
+              "key": "triggerWebhook",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step3-Patch-Organization-TMF632",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"status\": \"validated\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://b2b-scenario1-tmf632-v4-dronst.5sc6y6-4.usa-e2.cloudhub.io/tmf-api/party/v4/organization/org-alpha-9901?enrichFromRegister=true",
+          "protocol": "https",
+          "host": [
+            "b2b-scenario1-tmf632-v4-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "tmf-api",
+            "party",
+            "v4",
+            "organization",
+            "org-alpha-9901"
+          ],
+          "query": [
+            {
+              "key": "enrichFromRegister",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step4-Get-Organization-TMF632",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://b2b-scenario1-tmf632-v4-dronst.5sc6y6-4.usa-e2.cloudhub.io/tmf-api/party/v4/organization/org-alpha-9901",
+          "protocol": "https",
+          "host": [
+            "b2b-scenario1-tmf632-v4-dronst",
+            "5sc6y6-4",
+            "usa-e2",
+            "cloudhub",
+            "io"
+          ],
+          "path": [
+            "tmf-api",
+            "party",
+            "v4",
+            "organization",
+            "org-alpha-9901"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

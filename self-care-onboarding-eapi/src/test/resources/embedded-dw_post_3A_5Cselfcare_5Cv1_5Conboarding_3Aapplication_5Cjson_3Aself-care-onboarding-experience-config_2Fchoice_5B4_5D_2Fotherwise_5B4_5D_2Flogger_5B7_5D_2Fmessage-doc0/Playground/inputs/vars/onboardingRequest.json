@@ -1,30 +1,30 @@
 {
   "notification": {
-    "channel": "tempor",
-    "recipient": "dolor"
+    "channel": "Nam",
+    "recipient": "dictum"
   },
   "identity": {
-    "passportNumber": "felis",
-    "nationality": "lorem",
-    "issuingCountry": "dolor",
-    "givenName": "Aida",
-    "familyName": "Wang",
-    "countryOfResidence": "Lorem",
-    "birthDate": "Aliquam",
-    "email": "Abel.Lesende@gmail.com"
+    "passportNumber": "Pellentesque",
+    "nationality": "molestie",
+    "issuingCountry": "nunc",
+    "givenName": "Amalia",
+    "familyName": "Smithyman",
+    "countryOfResidence": "ipsum",
+    "birthDate": "Lorem",
+    "email": "Alease.Smither@gmail.com"
   },
   "selectedOffer": {
-    "expectedPrice": 19,
-    "currency": "dui",
-    "offeringId": "semper"
+    "expectedPrice": 5,
+    "currency": "sodales",
+    "offeringId": "aliquam"
   },
   "payment": {
-    "amount": 53,
-    "currency": "libero",
-    "cardToken": "lectus"
+    "amount": 43,
+    "currency": "ipsum",
+    "cardToken": "Aliquam"
   },
   "consent": {
-    "privacyProfileId": "adipiscing",
+    "privacyProfileId": "risus",
     "marketingConsent": false,
     "privacyAccepted": true,
     "agreedToTerms": false

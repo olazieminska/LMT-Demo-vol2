@@ -1,32 +1,32 @@
 {
   "notification": {
-    "channel": "Fusce",
-    "recipient": "tempor"
+    "channel": "Nam",
+    "recipient": "dictum"
   },
   "identity": {
-    "passportNumber": "adipiscing",
-    "nationality": "lorem",
-    "issuingCountry": "eget",
-    "givenName": "Alisia",
-    "familyName": "Alison",
-    "countryOfResidence": "sodales",
-    "birthDate": "convallis",
-    "email": "Curtis.Alkins@gmail.com"
+    "passportNumber": "Pellentesque",
+    "nationality": "molestie",
+    "issuingCountry": "nunc",
+    "givenName": "Amalia",
+    "familyName": "Smithyman",
+    "countryOfResidence": "ipsum",
+    "birthDate": "Lorem",
+    "email": "Alease.Smither@gmail.com"
   },
   "selectedOffer": {
-    "expectedPrice": 74,
-    "currency": "Nunc",
-    "offeringId": "Fusce"
+    "expectedPrice": 5,
+    "currency": "sodales",
+    "offeringId": "aliquam"
   },
   "payment": {
-    "amount": 97,
-    "currency": "dui",
-    "cardToken": "at"
+    "amount": 43,
+    "currency": "ipsum",
+    "cardToken": "Aliquam"
   },
   "consent": {
-    "privacyProfileId": "viverra",
-    "marketingConsent": true,
-    "privacyAccepted": false,
-    "agreedToTerms": true
+    "privacyProfileId": "risus",
+    "marketingConsent": false,
+    "privacyAccepted": true,
+    "agreedToTerms": false
   }
 }

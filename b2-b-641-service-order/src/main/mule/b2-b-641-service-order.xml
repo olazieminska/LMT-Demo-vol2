@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="tmf-641-serviceorder-v4-oas-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <http:request-config name="webhookSiteRequestConfig">
+        <http:request-connection protocol="HTTPS" host="webhook.site" port="443" />
+    </http:request-config>
+    <apikit:config name="tmf-641-serviceorder-v4-oas-config" api="resource::de727bf7-c1aa-485a-b0eb-0b60b6ad4dd3:tmf-641-serviceorder-v4-oas:4.2.0:oas:zip:tmf-641-serviceorder-v4-oas.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="tmf-641-serviceorder-v4-oas-main">
+        <http:listener config-ref="tmf-641-serviceorder-v4-oas-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="tmf-641-serviceorder-v4-oas-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="tmf-641-serviceorder-v4-oas-console">
+        <http:listener config-ref="tmf-641-serviceorder-v4-oas-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="tmf-641-serviceorder-v4-oas-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="delete:\hub\(id):tmf-641-serviceorder-v4-oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\hub\(id):tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="delete:\serviceOrder\(id):tmf-641-serviceorder-v4-oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\serviceOrder\(id):tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="patch:\serviceOrder\(id):application\json:tmf-641-serviceorder-v4-oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="patch:\serviceOrder\(id):application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="get:\cancelServiceOrder:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="get:\cancelServiceOrder:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="get:\cancelServiceOrder\(id):tmf-641-serviceorder-v4-oas-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\cancelServiceOrder\(id):tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="get:\serviceOrder:tmf-641-serviceorder-v4-oas-config">
+        <ee:transform doc:name="Build ServiceOrder List Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "SO-DEMO-0001",
+    href: "http://localhost:8081/api/serviceOrder/SO-DEMO-0001",
+    externalId: "EXT-SO-DEMO-0001",
+    category: "Managed Connectivity + DaaS",
+    description: "Managed connectivity and device subscription order",
+    orderDate: now() as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"},
+    state: "acknowledged",
+    relatedParty: [
+      {
+        id: "ORG-001",
+        name: "Demo B2B Enterprise",
+        role: "customer",
+        "@referredType": "Organization"
+      }
+    ],
+    serviceOrderItem: [
+      {
+        id: "1",
+        action: "add",
+        state: "acknowledged",
+        service: {
+          name: "Unlimited Mobile Voice & Data - Employee Lines",
+          "@type": "Service"
+        }
+      },
+      {
+        id: "2",
+        action: "add",
+        state: "acknowledged",
+        service: {
+          name: "FWA Business Internet - Site Connectivity",
+          "@type": "Service"
+        }
+      },
+      {
+        id: "3",
+        action: "add",
+        state: "acknowledged",
+        service: {
+          name: "Laptop Device-as-a-Service - 36 months",
+          "@type": "Service"
+        }
+      }
+    ]
+  }
+]
+]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "X-Result-Count": 1,
+  "X-Total-Count": 1
+}
+]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="TMF641 GET /serviceOrder mocked list response returned" />
+    </flow>
+    <flow name="get:\serviceOrder\(id):tmf-641-serviceorder-v4-oas-config">
+        <ee:transform doc:name="Build ServiceOrder by Id Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var serviceOrderId = attributes.uriParams.'id' default "SO-DEMO-0001"
+---
+{
+  id: serviceOrderId,
+  href: "http://localhost:8081/api/serviceOrder/" ++ serviceOrderId,
+  externalId: "EXT-" ++ serviceOrderId,
+  category: "Managed Connectivity + DaaS",
+  description: "Managed connectivity and device subscription order",
+  orderDate: now() as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"},
+  state: "acknowledged",
+  relatedParty: [
+    {
+      id: "ORG-001",
+      name: "Demo B2B Enterprise",
+      role: "customer",
+      "@referredType": "Organization"
+    }
+  ],
+  serviceOrderItem: [
+    {
+      id: "1",
+      action: "add",
+      state: "acknowledged",
+      service: {
+        name: "Unlimited Mobile Voice & Data - Employee Lines",
+        "@type": "Service"
+      }
+    },
+    {
+      id: "2",
+      action: "add",
+      state: "acknowledged",
+      service: {
+        name: "FWA Business Internet - Site Connectivity",
+        "@type": "Service"
+      }
+    },
+    {
+      id: "3",
+      action: "add",
+      state: "acknowledged",
+      service: {
+        name: "Laptop Device-as-a-Service - 36 months",
+        "@type": "Service"
+      }
+    }
+  ]
+}
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <logger level="INFO" message="TMF641 GET /serviceOrder/{id} mocked response returned" />
+    </flow>
+    <flow name="post:\cancelServiceOrder:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\cancelServiceOrder:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\hub:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\hub:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\cancelServiceOrderCreateEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\cancelServiceOrderCreateEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\cancelServiceOrderInformationRequiredEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\cancelServiceOrderInformationRequiredEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\cancelServiceOrderStateChangeEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\cancelServiceOrderStateChangeEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\serviceOrderAttributeValueChangeEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\serviceOrderAttributeValueChangeEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\serviceOrderCreateEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\serviceOrderCreateEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\serviceOrderDeleteEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\serviceOrderDeleteEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\serviceOrderInformationRequiredEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\serviceOrderInformationRequiredEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\serviceOrderJeopardyEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\serviceOrderJeopardyEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\serviceOrderMilestoneEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\serviceOrderMilestoneEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\listener\serviceOrderStateChangeEvent:application\json:tmf-641-serviceorder-v4-oas-config">
+        <logger level="INFO" message="post:\listener\serviceOrderStateChangeEvent:application\json:tmf-641-serviceorder-v4-oas-config" />
+    </flow>
+    <flow name="post:\serviceOrder:application\json:tmf-641-serviceorder-v4-oas-config">
+        <set-variable variableName="serviceOrderId" value="#[&quot;SO-&quot; ++ (uuid() as String)[0 to 7] ++ &quot;-&quot; ++ (now() as String {format: &quot;yyyyMMddHHmmss&quot;})]" />
+        <ee:transform doc:name="Build TMF641 ServiceOrder Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var incoming = payload default {}
+var generatedId = vars.serviceOrderId
+var baseHref = "http://localhost:8081/api/serviceOrder/"
+var orderItems = (incoming.serviceOrderItem default []) map ((item, index) -> (item - "id" - "state") ++ {
+    id: (item.id default ((index + 1) as String)),
+    state: (item.state default "acknowledged")
+})
+---
+{
+    id: generatedId,
+    href: baseHref ++ generatedId,
+    externalId: incoming.externalId default ("EXT-" ++ generatedId),
+    category: incoming.category default "Managed Connectivity + DaaS",
+    description: incoming.description default "Managed Connectivity + Device-as-a-Service bundle activation",
+    orderDate: (now() as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"}),
+    requestedStartDate: incoming.requestedStartDate default (now() as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"}),
+    requestedCompletionDate: incoming.requestedCompletionDate default ((now() + |P2D|) as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"}),
+    state: "acknowledged",
+    relatedParty: incoming.relatedParty default [
+        {
+            role: "customer",
+            name: "Demo B2B Enterprise",
+            "@referredType": "Organization"
+        }
+    ],
+    serviceOrderItem: orderItems
+}
+]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus">201</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <set-variable variableName="outboundHeaders" value='#[{
+            "Content-Type": "application/json;charset=utf-8",
+            "Location": "/api/serviceOrder/" ++ vars.serviceOrderId
+        }]' />
+        <ee:transform doc:name="Build Webhook Event Payload">
+            <ee:variables>
+                <ee:set-variable variableName="serviceOrderEventPayload"><![CDATA[%dw 2.0
+output application/json
+---
+{
+  eventId: uuid(),
+  eventType: "ServiceOrderCreateEvent",
+  eventTime: now() as String {format: "yyyy-MM-dd'T'HH:mm:ssXXX"},
+  event: {
+    serviceOrder: payload
+  }
+}
+]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <async>
+            <flow-ref name="notify-service-order-created-webhook" />
+        </async>
+        <logger level="INFO" message="TMF641 POST /serviceOrder created successfully" />
+    </flow>
+    <flow name="notify-service-order-created-webhook">
+        <try>
+            <set-payload value="#[vars.serviceOrderEventPayload]" />
+            <http:request config-ref="webhookSiteRequestConfig" method="POST" path="/8d384e80-b0a8-4843-8c43-d00f32bbc44a">
+                <http:headers><![CDATA[#[{
+                    "Content-Type": "application/json"
+                }]]]></http:headers>
+            </http:request>
+            <logger level="INFO" message='#[(&quot;ServiceOrderCreateEvent sent to webhook.site for id=&quot; ++ ((vars.serviceOrderId default &quot;unknown&quot;) as String)) as String]' />
+            <error-handler>
+                <on-error-continue type="ANY" logException="true">
+                    <logger level="WARN" message='#[(&quot;Webhook notification failed for serviceOrderId=&quot; ++ ((vars.serviceOrderId default &quot;unknown&quot;) as String) ++ &quot; cause=&quot; ++ ((error.description default &quot;n/a&quot;) as String)) as String]' />
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+</mule>

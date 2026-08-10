@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "sodales",
+    "recipient": "In"
+  },
+  "identity": {
+    "passportNumber": "amet",
+    "nationality": "nibh",
+    "issuingCountry": "elit",
+    "givenName": "Brooks",
+    "familyName": "Davitashvili",
+    "countryOfResidence": "ut",
+    "birthDate": "tincidunt",
+    "email": "Adelina.Smitten@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 90,
+    "currency": "nibh",
+    "offeringId": "dictum"
+  },
+  "payment": {
+    "amount": 16,
+    "currency": "aliquam",
+    "cardToken": "tempor"
+  },
+  "consent": {
+    "privacyProfileId": "dolor",
+    "marketingConsent": true,
+    "privacyAccepted": false,
+    "agreedToTerms": false
+  }
+}

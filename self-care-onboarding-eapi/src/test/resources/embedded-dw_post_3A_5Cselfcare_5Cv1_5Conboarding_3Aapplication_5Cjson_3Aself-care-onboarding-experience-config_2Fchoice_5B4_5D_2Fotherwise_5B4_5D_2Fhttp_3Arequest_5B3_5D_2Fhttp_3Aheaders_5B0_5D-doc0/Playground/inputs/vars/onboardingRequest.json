@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "ac",
+    "recipient": "nunc"
+  },
+  "identity": {
+    "passportNumber": "sodales",
+    "nationality": "Lorem",
+    "issuingCountry": "faucibus",
+    "givenName": "Alexis",
+    "familyName": "Taylor",
+    "countryOfResidence": "Aliquam",
+    "birthDate": "sed",
+    "email": "Alejandro.Smitherham@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 64,
+    "currency": "Lorem",
+    "offeringId": "venenatis"
+  },
+  "payment": {
+    "amount": 98,
+    "currency": "faucibus",
+    "cardToken": "libero"
+  },
+  "consent": {
+    "privacyProfileId": "justo",
+    "marketingConsent": true,
+    "privacyAccepted": false,
+    "agreedToTerms": false
+  }
+}

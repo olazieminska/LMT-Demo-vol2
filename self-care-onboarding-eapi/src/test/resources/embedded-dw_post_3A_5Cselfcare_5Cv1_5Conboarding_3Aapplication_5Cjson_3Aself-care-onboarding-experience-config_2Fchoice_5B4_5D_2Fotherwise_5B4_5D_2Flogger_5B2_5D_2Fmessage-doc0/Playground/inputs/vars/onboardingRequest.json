@@ -1,0 +1,32 @@
+{
+  "notification": {
+    "channel": "faucibus",
+    "recipient": "aliquam"
+  },
+  "identity": {
+    "passportNumber": "eros",
+    "nationality": "dolor",
+    "issuingCountry": "dolor",
+    "givenName": "Chas",
+    "familyName": "Smithyman",
+    "countryOfResidence": "erat",
+    "birthDate": "ac",
+    "email": "Alla.Davitashvili@gmail.com"
+  },
+  "selectedOffer": {
+    "expectedPrice": 52,
+    "currency": "lectus",
+    "offeringId": "viverra"
+  },
+  "payment": {
+    "amount": 73,
+    "currency": "dictum",
+    "cardToken": "nisi"
+  },
+  "consent": {
+    "privacyProfileId": "sed",
+    "marketingConsent": false,
+    "privacyAccepted": true,
+    "agreedToTerms": true
+  }
+}
